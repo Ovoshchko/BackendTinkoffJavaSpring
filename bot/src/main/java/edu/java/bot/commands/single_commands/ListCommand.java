@@ -24,7 +24,7 @@ public class ListCommand implements Executable {
     public String execute(Update update, List<String> args) {
         StringBuilder answer = new StringBuilder();
         List<String> links = LinksDB.getUsersLinks(update.message().chat().id());
-        if ((links==null)||(links.isEmpty())) {
+        if ((links == null) || (links.isEmpty())) {
             return EMPTY_LIST;
         }
         links.forEach(link -> answer.append("*Ссылка* - ").append(link).append("\n"));
