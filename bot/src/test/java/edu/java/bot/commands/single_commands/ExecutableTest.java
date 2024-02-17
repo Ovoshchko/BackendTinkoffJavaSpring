@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.data_base_imitation.LinksDB;
 import edu.java.bot.link_validators.LinkValidation;
 import edu.java.bot.utils.LinkTypes;
 import java.util.ArrayList;
@@ -13,10 +14,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class ExecutableTest {
@@ -25,6 +30,7 @@ class ExecutableTest {
     private final static Message MESSAGE = mock(Message.class);
     private final static Update UPDATE = mock(Update.class);
     private final static LinkValidation LINK_VALIDATION = mock(LinkValidation.class);
+    private final static MockedStatic<LinksDB> LINKS_DB = mockStatic(LinksDB.class);
     private static final List<Executable> COMMANDS = new ArrayList<>();
     private static final HelpCommand HELP_COMMAND = new HelpCommand(COMMANDS);
     private static final ListCommand LIST_COMMAND = new ListCommand();
@@ -39,6 +45,7 @@ class ExecutableTest {
         when(MESSAGE.chat()).thenReturn(CHAT);
         when(UPDATE.message()).thenReturn(MESSAGE);
         when(LINK_VALIDATION.isValid(anyString())).thenReturn(LinkTypes.VALID);
+        LINKS_DB.when(() -> LinksDB.getUsersLinks(anyLong())).thenReturn(new ArrayList<>());
         COMMANDS.addAll(List.of(LIST_COMMAND, START_COMMAND, TRACK_COMMAND, UNTRACK_COMMAND));
     }
 
@@ -76,6 +83,7 @@ class ExecutableTest {
     @MethodSource("getCommandWithResult")
     void execute(Executable command, String text, String answer, List<String> args) {
         when(MESSAGE.text()).thenReturn(text);
+
 
         String result = command.execute(UPDATE, args);
         assertTrue(result.contains(answer));

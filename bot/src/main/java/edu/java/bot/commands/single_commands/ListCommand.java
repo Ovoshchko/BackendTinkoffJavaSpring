@@ -23,11 +23,11 @@ public class ListCommand implements Executable {
     @Override
     public String execute(Update update, List<String> args) {
         StringBuilder answer = new StringBuilder();
-        LinksDB.getUsersLinks(update.message().chat().id())
-            .forEach(link -> answer.append("*Ссылка* - ").append(link).append("\n"));
-        if (answer.isEmpty()) {
+        List<String> links = LinksDB.getUsersLinks(update.message().chat().id());
+        if ((links==null)||(links.isEmpty())) {
             return EMPTY_LIST;
         }
+        links.forEach(link -> answer.append("*Ссылка* - ").append(link).append("\n"));
         return answer.toString();
     }
 }
