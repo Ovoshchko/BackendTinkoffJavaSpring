@@ -10,27 +10,28 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service public class CommandHandler {
+@Service
+public class CommandHandler {
 
     private final static String NOT_FOUND =
         "Простите, такой команды найдено не было. Пожалуйста, воспользуйтесь командой /help для просмотра доступных.";
 
     private final List<Executable> commandList;
 
-    @Autowired public CommandHandler(List<Executable> commandList) {
+    @Autowired
+    public CommandHandler(List<Executable> commandList) {
         this.commandList = commandList;
     }
 
     public SendMessage handle(Update update) {
         String[] message = update.message().text().split(" ");
         Optional<Executable> command = commandList.stream().filter(com -> com.name().equals(message[0])).findFirst();
-        String response = "";
-        if (command.isPresent()) {
-            response =
-                command.get().execute(update, Arrays.stream(Arrays.copyOfRange(message, 1, message.length)).toList());
-        } else {
-            response = NOT_FOUND;
-        }
-        return new SendMessage(update.message().chat().id(), response).parseMode(ParseMode.Markdown);
+        return new SendMessage(
+            update.message().chat().id(),
+            command.map(com -> com.execute(
+                update,
+                Arrays.stream(Arrays.copyOfRange(message, 1, message.length)).toList()
+            )).orElse(NOT_FOUND)
+        ).parseMode(ParseMode.Markdown);
     }
 }

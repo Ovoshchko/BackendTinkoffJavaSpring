@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class TrackCommand implements Executable {
 
     private final LinkValidation linkValidation;
+    private final LinksDB linksDB;
 
     @Override
     public String name() {
@@ -31,7 +32,7 @@ public class TrackCommand implements Executable {
         for (String link : args) {
             type = linkValidation.isValid(link);
             if (type == LinkTypes.VALID) {
-                LinksDB.addLink(update.message().chat().id(), link);
+                linksDB.addLink(update.message().chat().id(), link);
             }
             answer.append("_").append(link).append("_ - ").append(type.getValue()).append("\n");
         }

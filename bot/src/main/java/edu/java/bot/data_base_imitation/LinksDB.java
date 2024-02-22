@@ -4,36 +4,39 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
-//Финальный класс. Чисто как заглушка на время
-public final class LinksDB {
+@Service
+public class LinksDB {
 
-    private final static Map<Long, List<String>> LINK_DB = new HashMap<>();
+    private final Map<Long, List<String>> linkDb;
 
-    private LinksDB() {}
+    public LinksDB() {
+        linkDb = new HashMap<>();
+    }
 
-    public static void addLink(long id, String link) {
-        if (LINK_DB.containsKey(id)) {
-            if (!LINK_DB.get(id).contains(link)) {
-                LINK_DB.get(id).add(link);
+    public void addLink(long id, String link) {
+        if (linkDb.containsKey(id)) {
+            if (!linkDb.get(id).contains(link)) {
+                linkDb.get(id).add(link);
             }
         } else {
-            LINK_DB.put(id, new ArrayList<>());
-            LINK_DB.get(id).add(link);
+            linkDb.put(id, new ArrayList<>());
+            linkDb.get(id).add(link);
         }
     }
 
-    public static void deleteLink(long id, String link) {
-        if (LINK_DB.containsKey(id)) {
-            LINK_DB.get(id).remove(link);
-            if (LINK_DB.get(id).isEmpty()) {
-                LINK_DB.remove(id);
+    public void deleteLink(long id, String link) {
+        if (linkDb.containsKey(id)) {
+            linkDb.get(id).remove(link);
+            if (linkDb.get(id).isEmpty()) {
+                linkDb.remove(id);
             }
         }
     }
 
-    public static List<String> getUsersLinks(long id) {
-        return LINK_DB.get(id) == null ? new ArrayList<>() : LINK_DB.get(id);
+    public List<String> getUsersLinks(long id) {
+        return linkDb.get(id) == null ? new ArrayList<>() : linkDb.get(id);
     }
 
 }

@@ -4,7 +4,8 @@ import edu.java.bot.utils.LinkTypes;
 import java.net.URL;
 import org.springframework.stereotype.Component;
 
-@Component class StackOverflowLinkValidator extends LinkValidator {
+@Component
+class StackOverflowLinkValidator extends LinkValidator {
 
     private final String host = "stackoverflow.com";
 
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Component;
         super(null);
     }
 
-    @Override public LinkTypes isValid(URL url) {
+    @Override
+    public LinkTypes isValid(URL url) {
         return (url.getHost().equals(host)) ? LinkTypes.VALID : LinkTypes.NOT_KNOWN_LINK;
     }
 }
