@@ -7,7 +7,7 @@ public class StackoverflowWebClient implements StackoverflowClient {
 
     private final static String ENDPOINT = "questions/{id}?site=stackoverflow";
     private final WebClient webClient;
-    private String baseUrl = "https://api.stackexchange.com/2.3/";
+    private final String baseUrl = "https://api.stackexchange.com/2.3/";
 
     public StackoverflowWebClient() {
         webClient = WebClient.builder().baseUrl(baseUrl).build();
