@@ -8,7 +8,7 @@ api:
   github:
     baseUrl: https://api.github.com/
   stackoverflow:
-    base-url: https://api.stackexchange.com/
+    base-url: https://api.stackexchange.com/2.3/
 
 spring:
   application:
