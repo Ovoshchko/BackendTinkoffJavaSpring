@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LinkUpdateScheduler {
 
-    @Scheduled(fixedDelayString = "${app.scheduler.interval}")
+    @Scheduled(fixedDelayString = "#{@getScheduler.interval.toMillis()}")
     public void update() {
         log.info("Scheduled spam");
     }

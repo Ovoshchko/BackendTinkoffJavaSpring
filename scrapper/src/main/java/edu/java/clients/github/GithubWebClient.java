@@ -8,18 +8,9 @@ public class GithubWebClient implements GithubClient {
 
     private final static String ENDPOINT = "/repos/{owner}/{repo}";
     private final WebClient webClient;
-    private final String baseUrl = "https://api.github.com/";
-
-    public GithubWebClient() {
-        webClient = WebClient.builder().baseUrl(baseUrl).build();
-    }
 
     public GithubWebClient(String baseUrl) {
-        if (baseUrl.isBlank()) {
-            webClient = WebClient.builder().baseUrl(this.baseUrl).build();
-        } else {
-            webClient = WebClient.builder().baseUrl(baseUrl).build();
-        }
+        webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
     @Override
