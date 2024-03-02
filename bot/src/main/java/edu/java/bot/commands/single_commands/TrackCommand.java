@@ -1,8 +1,8 @@
 package edu.java.bot.commands.single_commands;
 
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.data_base_imitation.LinksDB;
 import edu.java.bot.link_validators.LinkValidation;
+import edu.java.bot.service.ScrapperService;
 import edu.java.bot.utils.LinkTypes;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class TrackCommand implements Executable {
 
     private final LinkValidation linkValidation;
-    private final LinksDB linksDB;
+    private final ScrapperService scrapperService;
 
     @Override
     public String name() {
@@ -31,10 +31,12 @@ public class TrackCommand implements Executable {
         LinkTypes type;
         for (String link : args) {
             type = linkValidation.isValid(link);
+            answer.append("_");
             if (type == LinkTypes.VALID) {
-                linksDB.addLink(update.message().chat().id(), link);
+                answer.append(scrapperService.addLink(update.message().chat().id(), link));
             }
-            answer.append("_").append(link).append("_ - ").append(type.getValue()).append("\n");
+            answer.append("_ - ").append(type.getValue());
+            answer.append("\n");
         }
         return answer.toString();
     }

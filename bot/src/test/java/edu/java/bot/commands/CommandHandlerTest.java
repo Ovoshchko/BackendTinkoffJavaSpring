@@ -13,12 +13,14 @@ import edu.java.bot.commands.single_commands.UntrackCommand;
 import edu.java.bot.data_base_imitation.LinksDB;
 import edu.java.bot.data_base_imitation.UserDB;
 import edu.java.bot.link_validators.LinkValidation;
+import edu.java.bot.service.ScrapperService;
 import edu.java.bot.utils.LinkTypes;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,15 +31,14 @@ class CommandHandlerTest {
     private final static Message MESSAGE = mock(Message.class);
     private final static Update UPDATE = mock(Update.class);
     private final static LinkValidation LINK_VALIDATION = mock(LinkValidation.class);
-    private final static LinksDB LINKS_DB = mock(LinksDB.class);
-    private final static UserDB USER_DB = mock(UserDB.class);
+    private final static ScrapperService SCRAPPER_SERVICE = mock(ScrapperService.class);
     private final static CommandHandler COMMAND_HANDLER = new CommandHandler(
         List.of(
             new HelpCommand(new ArrayList<>()),
-            new ListCommand(LINKS_DB),
-            new StartCommand(USER_DB),
-            new TrackCommand(LINK_VALIDATION, LINKS_DB),
-            new UntrackCommand(LINKS_DB)
+            new ListCommand(SCRAPPER_SERVICE),
+            new StartCommand(SCRAPPER_SERVICE),
+            new TrackCommand(LINK_VALIDATION, SCRAPPER_SERVICE),
+            new UntrackCommand(SCRAPPER_SERVICE)
         )
     );
 
@@ -47,6 +48,10 @@ class CommandHandlerTest {
         when(CHAT.firstName()).thenReturn("Ovoshch");
         when(MESSAGE.chat()).thenReturn(CHAT);
         when(UPDATE.message()).thenReturn(MESSAGE);
+        when(SCRAPPER_SERVICE.addLink(anyLong(), anyString())).thenReturn("https://github.com");
+        when(SCRAPPER_SERVICE.deleteLink(anyLong(), anyString())).thenReturn("https://stackoverflow.com");
+        when(SCRAPPER_SERVICE.getAllLinks(anyLong())).thenReturn(new ArrayList<>());
+        when(SCRAPPER_SERVICE.registerUserChat(anyLong())).thenReturn("Чат зарегистрирован");
         when(LINK_VALIDATION.isValid(anyString())).thenReturn(LinkTypes.VALID);
     }
 
