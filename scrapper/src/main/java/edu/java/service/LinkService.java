@@ -4,6 +4,7 @@ import edu.java.dto.request.AddLinkRequest;
 import edu.java.dto.request.RemoveLinkRequest;
 import edu.java.dto.response.LinkResponse;
 import edu.java.dto.response.ListLinksResponse;
+import edu.java.exception.NotFoundException;
 import java.net.URI;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class LinkService {
 
+    public static final int INVALID_ID = 666;
+
     @SneakyThrows
     public ResponseEntity getAllLinks(Long tgChatId) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -22,12 +25,18 @@ public class LinkService {
 
     @SneakyThrows
     public ResponseEntity addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
+        if (tgChatId == INVALID_ID) {
+            throw new NotFoundException("К сожалению, такого пользователя я не знаю. Зарегистрируйтесь, пожалуйстаD:");
+        }
         return ResponseEntity.status(HttpStatus.OK)
             .body(new LinkResponse(1L, new URI("http://github.com")));
     }
 
     @SneakyThrows
     public ResponseEntity deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
+        if ("https://slackoverflow.com".equals(removeLinkRequest.link())) {
+            throw new NotFoundException("Сожалею, такой ссылки и так не существует");
+        }
         return ResponseEntity.status(HttpStatus.OK)
             .body(new LinkResponse(1L, new URI("http://stackoverflow.com")));
     }

@@ -1,7 +1,6 @@
 package edu.java.exception;
 
 import edu.java.dto.response.ApiErrorResponse;
-import java.util.Arrays;
 import java.util.MissingFormatArgumentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -23,10 +22,7 @@ public class ControllerExceptionHandler {
     public ApiErrorResponse badRequestError(Exception e) {
         return new ApiErrorResponse(
             "Некорректные параметры запроса",
-            String.valueOf(HttpStatus.BAD_REQUEST.value()),
-            HttpStatus.BAD_REQUEST.name(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
-            Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()
+            String.valueOf(HttpStatus.BAD_REQUEST.value())
         );
     }
 
@@ -35,10 +31,7 @@ public class ControllerExceptionHandler {
     public ApiErrorResponse notFoundError(Exception e) {
         return new ApiErrorResponse(
             e.getMessage(),
-            String.valueOf(HttpStatus.NOT_FOUND.value()),
-            HttpStatus.NOT_FOUND.name(),
-            HttpStatus.NOT_FOUND.getReasonPhrase(),
-            Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()
+            String.valueOf(HttpStatus.NOT_FOUND.value())
         );
     }
 
@@ -47,10 +40,7 @@ public class ControllerExceptionHandler {
     public ApiErrorResponse alreadyExistsError(Exception e) {
         return new ApiErrorResponse(
             e.getMessage(),
-            String.valueOf(HttpStatus.CONFLICT.value()),
-            HttpStatus.CONFLICT.name(),
-            HttpStatus.CONFLICT.getReasonPhrase(),
-            Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()
+            String.valueOf(HttpStatus.CONFLICT.value())
         );
     }
 
