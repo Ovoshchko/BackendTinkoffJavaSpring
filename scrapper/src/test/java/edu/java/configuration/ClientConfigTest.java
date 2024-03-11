@@ -11,18 +11,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ClientConfigTest {
 
     @Autowired
-    private GithubWebClient githubClient;
+    private GithubWebClient githubWebClient;
 
     @Autowired
-    private StackoverflowWebClient stackoverflowClient;
+    private StackoverflowWebClient stackoverflowWebClient;
 
     @Test
     void getGithubClient() {
-        assertNotNull(githubClient);
+        assertNotNull(githubWebClient);
     }
 
     @Test
     void getStackoverflowClient() {
-        assertNotNull(stackoverflowClient);
+        assertNotNull(stackoverflowWebClient);
     }
 }
