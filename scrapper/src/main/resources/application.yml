@@ -5,10 +5,18 @@ app:
     force-check-delay: 5s
 
 api:
+  bot:
+    baseUrl: https://localhost:8090/
   github:
     baseUrl: https://api.github.com/
   stackoverflow:
     base-url: https://api.stackexchange.com/2.3/
+
+springdoc:
+  default-produces-media-type: application/json
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
 
 spring:
   application:

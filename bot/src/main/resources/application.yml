@@ -1,6 +1,16 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
 
+api:
+  scrapper:
+    baseUrl: http://localhost:8080/
+
+springdoc:
+  default-produces-media-type: application/json
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
 spring:
   config:
     import: classpath:/env.properties
