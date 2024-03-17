@@ -1,6 +1,6 @@
 package edu.java.scrapper.controller;
 
-import edu.java.scrapper.service.TgChatIdsService;
+import edu.java.scrapper.service.chat.JdbcTgChatIdsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.doNothing;
 public class TgChatIdsControllerTest {
 
     @Mock
-    TgChatIdsService tgChatIdsService;
+    JdbcTgChatIdsService jdbcTgChatIdsService;
 
     @InjectMocks
     TgChatIdsController tgChatIdsController;
@@ -25,7 +25,7 @@ public class TgChatIdsControllerTest {
     void registerUserChat_ReturnsHttpStatusOk_WhenRegistrationSuccessful() {
         long id = 12345L;
 
-        doNothing().when(tgChatIdsService).registerUserChat(anyLong());
+        doNothing().when(jdbcTgChatIdsService).registerUserChat(anyLong());
 
         ResponseEntity responseEntity = tgChatIdsController.registerUserChat(id);
 
@@ -36,7 +36,7 @@ public class TgChatIdsControllerTest {
     void deleteUserChat_ReturnsHttpStatusOk_WhenDeletionSuccessful() {
         long id = 12345L;
 
-        doNothing().when(tgChatIdsService).deleteUserChat(anyLong());
+        doNothing().when(jdbcTgChatIdsService).deleteUserChat(anyLong());
 
         ResponseEntity responseEntity = tgChatIdsController.deleteUserChat(id);
 

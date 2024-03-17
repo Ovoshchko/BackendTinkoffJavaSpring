@@ -1,6 +1,6 @@
 package edu.java.scrapper.controller;
 
-import edu.java.scrapper.service.TgChatIdsService;
+import edu.java.scrapper.service.chat.TgChatIdsService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class TgChatIdsController {
 
-    private final TgChatIdsService tgChatIdsService;
+    private final TgChatIdsService jdbcTgChatIdsService;
 
     @PostMapping
     @Operation(summary = "Добавление чата в список")
     public ResponseEntity registerUserChat(@PathVariable Long id) {
-        tgChatIdsService.registerUserChat(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        jdbcTgChatIdsService.registerUserChat(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Пользователь успешно добавлен.");
     }
 
     @DeleteMapping
     @Operation(summary = "Удаление чата из списка")
     public ResponseEntity deleteUserChat(@PathVariable Long id) {
-        tgChatIdsService.deleteUserChat(id);
+        jdbcTgChatIdsService.deleteUserChat(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

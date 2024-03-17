@@ -1,6 +1,7 @@
 package edu.java.scrapper.clients.stackoverflow;
 
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
+import java.net.URI;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class StackoverflowWebClient implements StackoverflowClient {
@@ -19,5 +20,14 @@ public class StackoverflowWebClient implements StackoverflowClient {
             .retrieve()
             .bodyToMono(StackoverflowResponse.class)
             .block();
+    }
+
+    @Override
+    public StackoverflowResponse checkForUpdates(URI url) {
+        String[] parts = url.getPath().split("/");
+
+        Long id = Long.parseLong(parts[parts.length - 2]);
+
+        return fetchUpdate(id);
     }
 }

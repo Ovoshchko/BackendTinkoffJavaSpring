@@ -18,8 +18,9 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
-
 spring:
+  liquibase:
+    enabled: false
   application:
     name: scrapper
   datasource:

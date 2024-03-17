@@ -1,23 +1,23 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.exception.AlreadyExistsException;
-import edu.java.scrapper.repository.User.UserRepository;
+import edu.java.scrapper.repository.jdbc.JdbcUserRepository;
+import edu.java.scrapper.service.chat.JdbcTgChatIdsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TgChatIdsServiceTest {
+public class JdbcTgChatIdsServiceTest {
 
     @Mock
-    private UserRepository jdbcUserRepository;
+    private JdbcUserRepository jdbcUserRepository;
     @InjectMocks
-    private TgChatIdsService tgChatIdsService;
+    private JdbcTgChatIdsService jdbcTgChatIdsService;
 
     @Test
     void registerUserChat_ReturnsOkResponse() {
@@ -25,7 +25,7 @@ public class TgChatIdsServiceTest {
 
         when(jdbcUserRepository.add(id)).thenReturn(1);
 
-        tgChatIdsService.registerUserChat(id);
+        jdbcTgChatIdsService.registerUserChat(id);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class TgChatIdsServiceTest {
 
         when(jdbcUserRepository.remove(id)).thenReturn(1);
 
-        tgChatIdsService.deleteUserChat(id);
+        jdbcTgChatIdsService.deleteUserChat(id);
     }
 
     @Test
@@ -43,9 +43,8 @@ public class TgChatIdsServiceTest {
 
         when(jdbcUserRepository.add(id)).thenThrow(AlreadyExistsException.class);
 
-        assertThrows(AlreadyExistsException.class, () -> tgChatIdsService.registerUserChat(id));
+        assertThrows(AlreadyExistsException.class, () -> jdbcTgChatIdsService.registerUserChat(id));
     }
-
 
 }
 

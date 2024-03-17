@@ -5,6 +5,7 @@ import edu.java.scrapper.dto.request.LinkUpdate;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import java.net.URI;
 import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,7 @@ public class BotWebClientTest {
 
         BotWebClient botWebClient = new BotWebClient(wireMockRule.baseUrl());
 
-        LinkUpdate linkUpdate = new LinkUpdate(1L, "https://ok.com", "ok", List.of(1L, 2L));
+        LinkUpdate linkUpdate = new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
         String result = botWebClient.postUpdate(linkUpdate);
 
         assertEquals("Success", result);
@@ -48,7 +49,7 @@ public class BotWebClientTest {
 
         BotWebClient botWebClient = new BotWebClient(wireMockRule.baseUrl());
 
-        LinkUpdate linkUpdate = new LinkUpdate(1L, "https://ok.com", "ok", List.of(1L, 2L));
+        LinkUpdate linkUpdate = new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
         String result = botWebClient.postUpdate(linkUpdate);
 
         assertEquals("Bad Request", result);

@@ -4,7 +4,7 @@ import edu.java.scrapper.dto.request.AddLinkRequest;
 import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.dto.response.ListLinksResponse;
-import edu.java.scrapper.service.LinkService;
+import edu.java.scrapper.service.link.JdbcLinkService;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class LinkControllerTest {
 
     @Mock
-    LinkService linkService;
+    JdbcLinkService jdbcLinkService;
 
     @InjectMocks
     LinkController linkController;
@@ -32,7 +32,7 @@ public class LinkControllerTest {
         List<LinkResponse> linkResponses = List.of(new LinkResponse(1L, URI.create("https://ok.com")));
         ListLinksResponse expectedResponse = new ListLinksResponse(linkResponses, linkResponses.size());
 
-        when(linkService.getAllLinks(tgChatId)).thenReturn(ResponseEntity.ok(expectedResponse));
+        when(jdbcLinkService.getAllLinks(tgChatId)).thenReturn(expectedResponse);
 
         ResponseEntity responseEntity = linkController.getAllLinks(tgChatId);
 
@@ -44,10 +44,10 @@ public class LinkControllerTest {
     void addLink_ReturnsLinkResponse_WhenCalled() {
         long tgChatId = 12345L;
         String url = "https://ok.com";
-        AddLinkRequest addLinkRequest = new AddLinkRequest(url);
+        AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create(url));
         LinkResponse expectedResponse = new LinkResponse(1L, URI.create(url));
 
-        when(linkService.addLink(tgChatId, addLinkRequest)).thenReturn(ResponseEntity.ok(expectedResponse));
+        when(jdbcLinkService.addLink(tgChatId, addLinkRequest)).thenReturn(expectedResponse);
 
         ResponseEntity<LinkResponse> responseEntity = linkController.addLink(tgChatId, addLinkRequest);
 
@@ -59,10 +59,10 @@ public class LinkControllerTest {
     void deleteLink_ReturnsLinkResponse_WhenCalled() {
         long tgChatId = 12345L;
         String url = "https://ok.com";
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(url);
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create(url));
         LinkResponse expectedResponse = new LinkResponse(1L, URI.create(url));
 
-        when(linkService.deleteLink(tgChatId, removeLinkRequest)).thenReturn(ResponseEntity.ok(expectedResponse));
+        when(jdbcLinkService.deleteLink(tgChatId, removeLinkRequest)).thenReturn(expectedResponse);
 
         ResponseEntity<LinkResponse> responseEntity = linkController.deleteLink(tgChatId, removeLinkRequest);
 

@@ -1,4 +1,4 @@
-package edu.java.scrapper.repository.User;
+package edu.java.scrapper.repository;
 
 import edu.java.scrapper.model.User;
 import java.util.List;

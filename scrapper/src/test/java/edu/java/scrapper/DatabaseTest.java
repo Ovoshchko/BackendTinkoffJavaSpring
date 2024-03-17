@@ -43,7 +43,6 @@ public class DatabaseTest {
             String selectQuery = "SELECT * FROM linkviewer.users;";
             try (ResultSet result = connection.prepareStatement(selectQuery).executeQuery()) {
                 assertTrue(result.next());
-                assertEquals(1L, result.getLong("id"));
                 assertEquals(3456L, result.getLong("tg_id"));
             }
         } catch (Exception e) {

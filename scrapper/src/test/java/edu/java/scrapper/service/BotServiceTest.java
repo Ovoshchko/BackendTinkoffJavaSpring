@@ -2,7 +2,10 @@ package edu.java.scrapper.service;
 
 import edu.java.scrapper.clients.bot.BotWebClient;
 import edu.java.scrapper.dto.request.LinkUpdate;
+import java.net.URI;
 import java.util.List;
+import edu.java.scrapper.service.bot.BotService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,10 +26,10 @@ public class BotServiceTest {
     @InjectMocks
     BotService botService;
 
-    @Test
+    @SneakyThrows @Test
     void postUpdate_ReturnsResponseFromWebClient() {
         long id = 1L;
-        String url = "https://example.com";
+        URI url = new URI("https://example.com");
         String description = "Test";
         List<Long> tgChatIds = List.of(1L, 2L);
         String expectedResponse = "Success";

@@ -24,13 +24,15 @@ class GithubWebClientTest {
                     "id": 345567
                 },
                 "deployments_url": "https://api.github.com/repos/Ovoshchko/C_course/deployments",
-                "created_at": "2022-12-04T18:16:29Z"
+                "created_at": "2022-12-04T18:16:29Z",
+                "updated_at": "2022-12-04T18:16:29Z"
             }
         """;
 
     private final static GithubResponse ANSWER = new GithubResponse(
         "ovoshch",
         new GithubResponse.Owner("Ovoshchko"),
+        OffsetDateTime.parse("2022-12-04T18:16:29Z"),
         OffsetDateTime.parse("2022-12-04T18:16:29Z")
     );
     private final static String OWNER = "owner";
