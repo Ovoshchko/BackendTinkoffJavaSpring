@@ -5,9 +5,7 @@ import edu.java.scrapper.dto.github.GithubResponse;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
 import edu.java.scrapper.model.Link;
 import java.net.URI;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +30,7 @@ public class LinkUpdateScheduler {
             URI uri = URI.create(link.getLink());
             if ("github.com".equals(uri.getHost())) {
                 GithubResponse response = params.getGithubWebClient().checkForUpdate(uri);
-                if (LocalDateTime.now().minus(Duration.of(1000000, ChronoUnit.MINUTES))
+                if (LocalDateTime.now().minus(params.getScheduler().interval())
                     .isBefore(response.lastUpdateTime().toLocalDateTime())) {
                     params.getBotService().postUpdate(
                         link.getId(),
@@ -43,7 +41,7 @@ public class LinkUpdateScheduler {
                 }
             } else if ("stackoverflow.com".equals(uri.getHost())) {
                 StackoverflowResponse response = params.getStackoverflowWebClient().checkForUpdates(uri);
-                if (LocalDateTime.now().minus(Duration.of(1000000, ChronoUnit.HOURS))
+                if (LocalDateTime.now().minus(params.getScheduler().interval())
                     .isBefore(response.items().get(0).lastActivityDate().toLocalDateTime())) {
                     params.getBotService().postUpdate(
                         link.getId(),
