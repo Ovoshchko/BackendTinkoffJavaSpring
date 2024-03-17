@@ -84,13 +84,9 @@ public class JdbcLinkRepository implements LinkRepository {
 
     public Collection<Link> findLinksUpdatedMoreThanNMinutesAgo(long minutes) {
         LocalDateTime minutesAgo = LocalDateTime.now().minusMinutes(minutes);
-        String query = "SELECT * FROM links WHERE last_updated < ?";
+        String query = "SELECT * FROM links WHERE last_check < ?;";
 
-        return jdbcTemplate.query(con -> {
-            PreparedStatement statement = con.prepareStatement(query);
-            statement.setTimestamp(1, Timestamp.valueOf(minutesAgo));
-            return statement;
-        }, (rs, rowNum) -> {
+        return jdbcTemplate.query(query, new Object[]{Timestamp.valueOf(minutesAgo)}, (rs, rowNum) -> {
             Link link = new Link();
             link.setId(rs.getLong("id"));
             link.setLink(rs.getString("url"));
