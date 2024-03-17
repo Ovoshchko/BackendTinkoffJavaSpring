@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class DatabaseTest {
 
+    //Мы шпионы, никто не узнает, что мы селектили)
     @ParameterizedTest
-    @Rollback
     @ValueSource(strings = {"users", "links", "userlink"})
     public void isTablesPresent(String table) {
         try (Connection connection = POSTGRES.createConnection("")) {
