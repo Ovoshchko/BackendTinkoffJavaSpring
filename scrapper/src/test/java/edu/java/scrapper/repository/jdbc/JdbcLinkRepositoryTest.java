@@ -74,6 +74,7 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
+    @Rollback
     void listAll() {
         long userId = 12345L;
         URI linkUri = URI.create("https://example.com");

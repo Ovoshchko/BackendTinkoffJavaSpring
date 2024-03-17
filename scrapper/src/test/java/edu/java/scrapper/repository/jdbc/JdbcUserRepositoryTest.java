@@ -23,6 +23,8 @@ class JdbcUserRepositoryTest extends IntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
+    @Transactional
+    @Rollback
     void findAll() {
         long userId = 12345L;
 
