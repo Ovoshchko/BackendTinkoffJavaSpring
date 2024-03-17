@@ -1,28 +1,29 @@
 package edu.java.bot.service;
 
 import edu.java.bot.dto.request.LinkUpdate;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import edu.java.bot.listener.CommandListener;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
+@ExtendWith(MockitoExtension.class)
 class UpdateServiceTest {
 
-    private UpdateService updateService;
-
-    @BeforeEach
-    void setUp() {
-        updateService = new UpdateService();
-    }
+    @Mock
+    private CommandListener listener;
+    @InjectMocks
+    private UpdateService service;
 
     @Test
     void postUpdateReturns200() {
         LinkUpdate validLinkUpdate = new LinkUpdate(1L, "https://ok.com", "ok", List.of(1L));
-        ResponseEntity responseEntity = updateService.postUpdate(validLinkUpdate);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("Обновление обработано", responseEntity.getBody());
+        doNothing().when(listener).sendMessage(any());
+        service.postUpdate(validLinkUpdate);
     }
 }
 

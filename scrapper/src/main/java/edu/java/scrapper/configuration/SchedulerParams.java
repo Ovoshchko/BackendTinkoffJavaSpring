@@ -6,8 +6,6 @@ import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
 import edu.java.scrapper.service.bot.BotService;
 import lombok.Getter;
-import org.springframework.context.annotation.Configuration;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,9 +21,11 @@ public class SchedulerParams {
     private final StackoverflowClient stackoverflowWebClient;
 
     @Autowired
-    public SchedulerParams(UserLinkRepository userLinkRepository, LinkRepository linkRepository,
+    public SchedulerParams(
+        UserLinkRepository userLinkRepository, LinkRepository linkRepository,
         ApplicationConfig.Scheduler scheduler, BotService botService,
-        GithubClient githubWebClient, StackoverflowClient stackoverflowWebClient) {
+        GithubClient githubWebClient, StackoverflowClient stackoverflowWebClient
+    ) {
         this.userLinkRepository = userLinkRepository;
         this.linkRepository = linkRepository;
         this.scheduler = scheduler;

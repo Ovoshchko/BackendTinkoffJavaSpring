@@ -5,6 +5,7 @@ import edu.java.bot.service.UpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,6 @@ public class UpdateController {
     @PostMapping
     @Operation(summary = "Обновление ссылки")
     public ResponseEntity postUpdate(@RequestBody @Valid LinkUpdate linkUpdate) {
-        return updateService.postUpdate(linkUpdate);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

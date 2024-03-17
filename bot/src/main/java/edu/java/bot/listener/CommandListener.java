@@ -3,6 +3,7 @@ package edu.java.bot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.CommandHandler;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,13 @@ public class CommandListener implements UpdatesListener {
     public int process(List<Update> list) {
         for (Update update : list) {
             if (update.message() != null) {
-                bot.execute(commandHandler.handle(update));
+                sendMessage(commandHandler.handle(update));
             }
         }
         return CONFIRMED_UPDATES_ALL;
+    }
+
+    public void sendMessage(SendMessage message) {
+        bot.execute(message);
     }
 }

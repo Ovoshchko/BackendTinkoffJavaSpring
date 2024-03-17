@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,7 +32,7 @@ class UpdateControllerTest {
     void postUpdateReturns200() throws Exception {
         LinkUpdate linkUpdate = new LinkUpdate(1L, "https://github.com", "desc", List.of(1L, 2L));
 
-        when(UPDATE_SERVICE.postUpdate(any(LinkUpdate.class))).thenReturn(ResponseEntity.ok().build());
+        doNothing().when(UPDATE_SERVICE).postUpdate(any(LinkUpdate.class));
 
         mockMvc.perform(post("/updates")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,7 +44,7 @@ class UpdateControllerTest {
     void postUpdateReturns400() throws Exception {
         LinkUpdate linkUpdate = new LinkUpdate(null, "https://github.com", "desc", List.of(1L, 2L));
 
-        when(UPDATE_SERVICE.postUpdate(any(LinkUpdate.class))).thenReturn(ResponseEntity.badRequest().build());
+        doNothing().when(UPDATE_SERVICE).postUpdate(any(LinkUpdate.class));
 
         mockMvc.perform(post("/updates")
                 .contentType(MediaType.APPLICATION_JSON)
