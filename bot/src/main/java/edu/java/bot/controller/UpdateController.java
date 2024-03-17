@@ -22,6 +22,7 @@ public class UpdateController {
     @PostMapping
     @Operation(summary = "Обновление ссылки")
     public ResponseEntity postUpdate(@RequestBody @Valid LinkUpdate linkUpdate) {
-        return ResponseEntity.status(HttpStatus.OK).build();
+        updateService.postUpdate(linkUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body("Всё ок");
     }
 }

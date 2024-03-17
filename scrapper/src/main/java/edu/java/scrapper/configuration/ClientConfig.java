@@ -13,7 +13,7 @@ public class ClientConfig {
     private String gitBasePath;
     @Value("${api.stackoverflow.baseUrl:https://api.stackexchange.com/2.3/}")
     private String stackoverflowBasePath;
-    @Value("${api.bot.baseUrl:https://localhost:8090}")
+    @Value("${api.bot.baseUrl:http://localhost:8090}")
     private String botBasePath;
 
     @Bean
