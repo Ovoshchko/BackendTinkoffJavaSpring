@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doNothing;
 @ExtendWith(MockitoExtension.class)
 public class TgChatIdsControllerTest {
 
+    public static final long TG_CHAT_ID = 12345L;
     @Mock
     JdbcTgChatIdsService jdbcTgChatIdsService;
 
@@ -23,22 +24,20 @@ public class TgChatIdsControllerTest {
 
     @Test
     void registerUserChat_ReturnsHttpStatusOk_WhenRegistrationSuccessful() {
-        long id = 12345L;
 
         doNothing().when(jdbcTgChatIdsService).registerUserChat(anyLong());
 
-        ResponseEntity responseEntity = tgChatIdsController.registerUserChat(id);
+        ResponseEntity responseEntity = tgChatIdsController.registerUserChat(TG_CHAT_ID);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     void deleteUserChat_ReturnsHttpStatusOk_WhenDeletionSuccessful() {
-        long id = 12345L;
 
         doNothing().when(jdbcTgChatIdsService).deleteUserChat(anyLong());
 
-        ResponseEntity responseEntity = tgChatIdsController.deleteUserChat(id);
+        ResponseEntity responseEntity = tgChatIdsController.deleteUserChat(TG_CHAT_ID);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }

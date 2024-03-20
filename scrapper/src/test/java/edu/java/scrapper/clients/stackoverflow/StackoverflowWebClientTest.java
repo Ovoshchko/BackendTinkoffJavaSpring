@@ -4,10 +4,12 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Body;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -55,6 +57,7 @@ class StackoverflowWebClientTest {
         )
     );
     private final static Long ID = 72647357L;
+    public static final URI STACKOVERFLOW_URL = URI.create("https://stackoverflow.com/questions/" + ID + "/ok");
 
     private static WireMockServer wireMockServer;
 
@@ -70,20 +73,33 @@ class StackoverflowWebClientTest {
         wireMockServer.stop();
     }
 
-    @Test
-    void fetchUpdate() {
-        String baseUrl = "http://localhost:" + wireMockServer.port();
-
+    @BeforeEach
+    void setInit() {
         wireMockServer.stubFor(get(urlPathEqualTo("/questions/" + ID))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withResponseBody(new Body(SERVER_RESPONSE))));
+    }
+
+    @Test
+    void fetchUpdate() {
+        String baseUrl = "http://localhost:" + wireMockServer.port();
 
         StackoverflowClient client = new StackoverflowWebClient(baseUrl);
         StackoverflowResponse result = client.fetchUpdate(ID);
 
         assertThat(result).isEqualTo(ANSWER);
+    }
+
+    @Test
+    void checkForUpdate() {
+        String baseUrl = "http://localhost:" + wireMockServer.port();
+
+        StackoverflowClient client = new StackoverflowWebClient(baseUrl);
+        StackoverflowResponse response = client.checkForUpdates(STACKOVERFLOW_URL);
+
+        assertThat(response).isEqualTo(ANSWER);
     }
 
 }

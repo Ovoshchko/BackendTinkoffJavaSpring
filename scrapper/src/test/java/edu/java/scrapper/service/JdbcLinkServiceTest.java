@@ -5,11 +5,11 @@ import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.repository.jdbc.JdbcUserLinkRepository;
+import edu.java.scrapper.service.link.JdbcLinkService;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
-import edu.java.scrapper.repository.jdbc.JdbcUserLinkRepository;
-import edu.java.scrapper.service.link.JdbcLinkService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +21,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class JdbcLinkServiceTest {
 
+    public static final long TG_CHAT_ID = 12345L;
+    public static final URI URL = URI.create("https://example.com");
+    public static final Link LINK = new Link(TG_CHAT_ID, URL.toString(), LocalDateTime.now());
+    public static final LinkResponse LINK_RESPONSE = new LinkResponse(TG_CHAT_ID, URL);
     @Mock
     private JdbcLinkRepository jdbcLinkRepository;
     @Mock
@@ -30,46 +34,39 @@ public class JdbcLinkServiceTest {
 
     @Test
     void getAllLinks_ReturnsListOfLinks() {
-        long tgChatId = 12345L;
 
-        Link link = new Link(tgChatId, "https://github.com", LocalDateTime.now());
+        when(jdbcUserLinkRepository.getAllLinksByUserId(TG_CHAT_ID)).thenReturn(List.of(LINK));
 
-        when(jdbcUserLinkRepository.getAllLinksByUserId(tgChatId)).thenReturn(List.of(link));
-
-        List<LinkResponse> responseEntity = jdbcLinkService.getAllLinks(tgChatId).links();
+        List<LinkResponse> responseEntity = jdbcLinkService.getAllLinks(TG_CHAT_ID).links();
 
         assertEquals(1, responseEntity.size());
-        assertEquals(link.getLink(), responseEntity.get(0).url().toString());
+        assertEquals(LINK.getLink(), responseEntity.get(0).url().toString());
     }
 
     @Test
     void addLink_ReturnsLinkResponse() {
-        long tgChatId = 12345L;
 
-        URI link = URI.create("https://example.com");
-        AddLinkRequest addLinkRequest = new AddLinkRequest(link);
+        AddLinkRequest addLinkRequest = new AddLinkRequest(URL);
 
-        when(jdbcLinkRepository.add(tgChatId, addLinkRequest.link())).thenReturn(new LinkResponse(tgChatId, link));
+        when(jdbcLinkRepository.add(TG_CHAT_ID, addLinkRequest.link())).thenReturn(LINK_RESPONSE);
 
-        LinkResponse body = jdbcLinkService.addLink(tgChatId, addLinkRequest);
+        LinkResponse body = jdbcLinkService.addLink(TG_CHAT_ID, addLinkRequest);
 
-        assertEquals(tgChatId, body.id());
-        assertEquals(link, body.url());
+        assertEquals(TG_CHAT_ID, body.id());
+        assertEquals(URL, body.url());
     }
 
     @Test
     void deleteLink_ReturnsLinkResponse() {
-        long tgChatId = 12345L;
 
-        URI link = URI.create("https://example.com");
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(link);
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URL);
 
-        when(jdbcLinkRepository.delete(tgChatId, link)).thenReturn(new LinkResponse(tgChatId, link));
+        when(jdbcLinkRepository.delete(TG_CHAT_ID, URL)).thenReturn(LINK_RESPONSE);
 
-        LinkResponse responseEntity = jdbcLinkService.deleteLink(tgChatId, removeLinkRequest);
+        LinkResponse responseEntity = jdbcLinkService.deleteLink(TG_CHAT_ID, removeLinkRequest);
 
-        assertEquals(tgChatId, responseEntity.id());
-        assertEquals(link, responseEntity.url());
+        assertEquals(TG_CHAT_ID, responseEntity.id());
+        assertEquals(URL, responseEntity.url());
     }
 
 }

@@ -6,23 +6,33 @@ import edu.java.bot.dto.request.RemoveLinkRequest;
 import edu.java.bot.dto.response.LinkResponse;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ScrapperServiceTest {
 
-    private static final ScrapperWebClient scrapperWebClient = Mockito.mock(ScrapperWebClient.class);
-    private ScrapperService scrapperService;
+    private final static LinkResponse VALID_LINK_RESPONSE = new LinkResponse(1L, URI.create("https://example.com"));
+    private final static LinkResponse SECOND_VALID_LINK_RESPONSE = new LinkResponse(1L, URI.create("https://ok.com"));
 
-    @BeforeEach
-    void setUp() {
-        scrapperService = new ScrapperService(scrapperWebClient);
-    }
+    @Mock
+
+    private ScrapperWebClient scrapperWebClient;
+    @InjectMocks
+    private ScrapperService scrapperService;
 
     @Test
     void registerUserChatSuccess() {
@@ -42,46 +52,49 @@ class ScrapperServiceTest {
         assertEquals("Success", result);
     }
 
-    @Test
-    @SneakyThrows
-    void getAllLinksSuccess() {
+    @ParameterizedTest
+    @MethodSource("provideLinkResponse")
+    void getAllLinksSuccess(LinkResponse linkResponse) {
         List<LinkResponse> links = List.of(
-            new LinkResponse(1L, new URI("https://example.com")),
-            new LinkResponse(1L, new URI("https://ok.com"))
+            linkResponse,
+            linkResponse
         );
+
         when(scrapperWebClient.getAllLinks(any(Long.class))).thenReturn(links);
 
-        List<String> result = scrapperService.getAllLinks(1L);
+        List<String> result = scrapperService.getAllLinks(VALID_LINK_RESPONSE.id());
 
         assertEquals(links.stream().map(l -> l.url().toString()).toList(), result);
     }
 
-    @Test
-    @SneakyThrows
-    void addLink_Success() {
-        String addLinkRequest = "https://ok.com";
-        when(scrapperWebClient.addLink(any(Long.class), any(AddLinkRequest.class))).thenReturn(new LinkResponse(
-            1L,
-            new URI("https://ok.com")
-        ));
+    @ParameterizedTest
+    @MethodSource("provideLinkResponse")
+    void addLink_Success(LinkResponse linkResponse) {
+        when(scrapperWebClient.addLink(any(Long.class), any(AddLinkRequest.class))).thenReturn(linkResponse);
 
-        String result = scrapperService.addLink(1L, "https://ok.com");
+        String result = scrapperService.addLink(linkResponse.id(), linkResponse.url().toString());
 
-        assertEquals(addLinkRequest, result);
+        assertEquals(linkResponse.url().toString(), result);
     }
 
-    @Test
-    @SneakyThrows
-    void deleteLink_Success() {
-        String removeLinkRequest = "https://ok.com";
+    @ParameterizedTest
+    @MethodSource("provideLinkResponse")
+    void deleteLink_Success(LinkResponse linkResponse) {
         when(scrapperWebClient.deleteLink(
             any(Long.class),
             any(RemoveLinkRequest.class)
-        )).thenReturn(new LinkResponse(1L, new URI("https://ok.com")));
+        )).thenReturn(linkResponse);
 
-        String result = scrapperService.deleteLink(1L, "https://ok.com");
+        String result = scrapperService.deleteLink(linkResponse.id(), linkResponse.url().toString());
 
-        assertEquals(removeLinkRequest, result);
+        assertEquals(linkResponse.url().toString(), result);
+    }
+
+    public static Stream<Arguments> provideLinkResponse() {
+        return Stream.of(
+            Arguments.of(VALID_LINK_RESPONSE),
+            Arguments.of(SECOND_VALID_LINK_RESPONSE)
+        );
     }
 }
 

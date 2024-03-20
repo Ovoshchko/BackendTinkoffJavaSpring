@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class LinkControllerTest {
 
+    public static final URI URL = URI.create("https://ok.com");
+    public static final long TG_CHAT_ID = 12345L;
     @Mock
     JdbcLinkService jdbcLinkService;
 
@@ -28,13 +30,12 @@ public class LinkControllerTest {
 
     @Test
     void getAllLinks_ReturnsListOfLinks_WhenCalled() {
-        long tgChatId = 12345L;
-        List<LinkResponse> linkResponses = List.of(new LinkResponse(1L, URI.create("https://ok.com")));
+        List<LinkResponse> linkResponses = List.of(new LinkResponse(TG_CHAT_ID, URL));
         ListLinksResponse expectedResponse = new ListLinksResponse(linkResponses, linkResponses.size());
 
-        when(jdbcLinkService.getAllLinks(tgChatId)).thenReturn(expectedResponse);
+        when(jdbcLinkService.getAllLinks(TG_CHAT_ID)).thenReturn(expectedResponse);
 
-        ResponseEntity responseEntity = linkController.getAllLinks(tgChatId);
+        ResponseEntity responseEntity = linkController.getAllLinks(TG_CHAT_ID);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());
@@ -42,14 +43,13 @@ public class LinkControllerTest {
 
     @Test
     void addLink_ReturnsLinkResponse_WhenCalled() {
-        long tgChatId = 12345L;
-        String url = "https://ok.com";
-        AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create(url));
-        LinkResponse expectedResponse = new LinkResponse(1L, URI.create(url));
 
-        when(jdbcLinkService.addLink(tgChatId, addLinkRequest)).thenReturn(expectedResponse);
+        AddLinkRequest addLinkRequest = new AddLinkRequest(URL);
+        LinkResponse expectedResponse = new LinkResponse(TG_CHAT_ID, URL);
 
-        ResponseEntity<LinkResponse> responseEntity = linkController.addLink(tgChatId, addLinkRequest);
+        when(jdbcLinkService.addLink(TG_CHAT_ID, addLinkRequest)).thenReturn(expectedResponse);
+
+        ResponseEntity<LinkResponse> responseEntity = linkController.addLink(TG_CHAT_ID, addLinkRequest);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());
@@ -57,14 +57,13 @@ public class LinkControllerTest {
 
     @Test
     void deleteLink_ReturnsLinkResponse_WhenCalled() {
-        long tgChatId = 12345L;
-        String url = "https://ok.com";
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create(url));
-        LinkResponse expectedResponse = new LinkResponse(1L, URI.create(url));
 
-        when(jdbcLinkService.deleteLink(tgChatId, removeLinkRequest)).thenReturn(expectedResponse);
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URL);
+        LinkResponse expectedResponse = new LinkResponse(TG_CHAT_ID, URL);
 
-        ResponseEntity<LinkResponse> responseEntity = linkController.deleteLink(tgChatId, removeLinkRequest);
+        when(jdbcLinkService.deleteLink(TG_CHAT_ID, removeLinkRequest)).thenReturn(expectedResponse);
+
+        ResponseEntity<LinkResponse> responseEntity = linkController.deleteLink(TG_CHAT_ID, removeLinkRequest);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());

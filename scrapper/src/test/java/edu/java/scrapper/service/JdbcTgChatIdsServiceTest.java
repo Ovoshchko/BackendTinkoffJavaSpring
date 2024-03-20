@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class JdbcTgChatIdsServiceTest {
 
+    public static final long TG_CHAT_ID = 12345L;
     @Mock
     private JdbcUserRepository jdbcUserRepository;
     @InjectMocks
@@ -21,29 +22,26 @@ public class JdbcTgChatIdsServiceTest {
 
     @Test
     void registerUserChat_ReturnsOkResponse() {
-        long id = 12345L;
 
-        when(jdbcUserRepository.add(id)).thenReturn(1);
+        when(jdbcUserRepository.add(TG_CHAT_ID)).thenReturn(1);
 
-        jdbcTgChatIdsService.registerUserChat(id);
+        jdbcTgChatIdsService.registerUserChat(TG_CHAT_ID);
     }
 
     @Test
     void deleteUserChat_ReturnsOkResponse() {
-        long id = 12345L;
 
-        when(jdbcUserRepository.remove(id)).thenReturn(1);
+        when(jdbcUserRepository.remove(TG_CHAT_ID)).thenReturn(1);
 
-        jdbcTgChatIdsService.deleteUserChat(id);
+        jdbcTgChatIdsService.deleteUserChat(TG_CHAT_ID);
     }
 
     @Test
     void registerUserChat_ReturnsApiErrorResponse() {
-        long id = 666L;
 
-        when(jdbcUserRepository.add(id)).thenThrow(AlreadyExistsException.class);
+        when(jdbcUserRepository.add(TG_CHAT_ID)).thenThrow(AlreadyExistsException.class);
 
-        assertThrows(AlreadyExistsException.class, () -> jdbcTgChatIdsService.registerUserChat(id));
+        assertThrows(AlreadyExistsException.class, () -> jdbcTgChatIdsService.registerUserChat(TG_CHAT_ID));
     }
 
 }

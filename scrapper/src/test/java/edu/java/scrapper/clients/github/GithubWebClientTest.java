@@ -4,12 +4,16 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Body;
 import edu.java.scrapper.dto.github.GithubResponse;
+import java.net.URI;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import java.time.OffsetDateTime;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GithubWebClientTest {
@@ -37,6 +41,8 @@ class GithubWebClientTest {
     );
     private final static String OWNER = "owner";
     private final static String REPO = "repo";
+    public static final URI GITHUB_URL = URI.create("http://github.com/" + OWNER + "/" + REPO);
+    public static final String HTTP_LOCALHOST = "http://localhost:";
 
     private static WireMockServer wireMockServer;
 
@@ -47,6 +53,15 @@ class GithubWebClientTest {
         WireMock.configureFor("localhost", wireMockServer.port());
     }
 
+    @BeforeEach
+    void setInit() {
+        wireMockServer.stubFor(get(urlPathEqualTo("/repos/" + OWNER + "/" + REPO))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .withResponseBody(new Body(SERVER_RESPONSE))));
+    }
+
     @AfterAll
     static void close() {
         wireMockServer.stop();
@@ -54,17 +69,22 @@ class GithubWebClientTest {
 
     @Test
     void fetchUpdate() {
-        String baseUrl = "http://localhost:" + wireMockServer.port();
-
-        wireMockServer.stubFor(get(urlPathEqualTo("/repos/" + OWNER + "/" + REPO))
-            .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .withResponseBody(new Body(SERVER_RESPONSE))));
+        String baseUrl = HTTP_LOCALHOST + wireMockServer.port();
 
         GithubClient client = new GithubWebClient(baseUrl);
         GithubResponse result = client.fetchUpdate(OWNER, REPO);
 
         assertThat(result).isEqualTo(ANSWER);
+    }
+
+    @Test
+    void checkForUpdate() {
+
+        String baseUrl = HTTP_LOCALHOST + wireMockServer.port();
+
+        GithubClient client = new GithubWebClient(baseUrl);
+        GithubResponse response = client.checkForUpdate(GITHUB_URL);
+
+        assertThat(response).isEqualTo(ANSWER);
     }
 }

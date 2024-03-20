@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BotWebClientTest {
 
+    public static final LinkUpdate LINK_UPDATE =
+        new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
 
@@ -33,8 +36,7 @@ public class BotWebClientTest {
 
         BotWebClient botWebClient = new BotWebClient(wireMockRule.baseUrl());
 
-        LinkUpdate linkUpdate = new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
-        String result = botWebClient.postUpdate(linkUpdate);
+        String result = botWebClient.postUpdate(LINK_UPDATE);
 
         assertEquals("Success", result);
     }
@@ -49,8 +51,7 @@ public class BotWebClientTest {
 
         BotWebClient botWebClient = new BotWebClient(wireMockRule.baseUrl());
 
-        LinkUpdate linkUpdate = new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
-        String result = botWebClient.postUpdate(linkUpdate);
+        String result = botWebClient.postUpdate(LINK_UPDATE);
 
         assertEquals("Bad Request", result);
     }

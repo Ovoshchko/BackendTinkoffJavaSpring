@@ -2,7 +2,6 @@ package edu.java.scrapper.clients.github;
 
 import edu.java.scrapper.dto.github.GithubResponse;
 import java.net.URI;
-import lombok.SneakyThrows;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -26,7 +25,6 @@ public class GithubWebClient implements GithubClient {
     }
 
     @Override
-    @SneakyThrows
     public GithubResponse checkForUpdate(URI url) {
         String[] path = url.getPath().split("/");
 

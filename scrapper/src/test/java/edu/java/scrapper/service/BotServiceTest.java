@@ -20,26 +20,29 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BotServiceTest {
 
+    public static final long TG_CHAT_ID = 1L;
+    public static final URI URL = URI.create("https://example.com");
+    public static final String DESCRIPTION = "Test";
+    public static final List<Long> TG_CHAT_IDS = List.of(1L, 2L);
+    public static final String EXPECTED_ANSWER = "Success";
     @Mock
     BotWebClient botWebClient;
 
     @InjectMocks
     BotService botService;
 
-    @SneakyThrows @Test
+    @Test
     void postUpdate_ReturnsResponseFromWebClient() {
-        long id = 1L;
-        URI url = new URI("https://example.com");
-        String description = "Test";
-        List<Long> tgChatIds = List.of(1L, 2L);
-        String expectedResponse = "Success";
 
-        when(botWebClient.postUpdate(any(LinkUpdate.class))).thenReturn(expectedResponse);
+        when(botWebClient.postUpdate(any(LinkUpdate.class))).thenReturn(EXPECTED_ANSWER);
 
-        String response = botService.postUpdate(id, url, description, tgChatIds);
+        String response = botService.postUpdate(TG_CHAT_ID, URL, DESCRIPTION, TG_CHAT_IDS);
 
-        assertEquals(expectedResponse, response);
-        verify(botWebClient, times(1)).postUpdate(any(LinkUpdate.class));
+        assertEquals(EXPECTED_ANSWER, response);
+
+        botService.postUpdate(TG_CHAT_ID, URL, DESCRIPTION, TG_CHAT_IDS);
+
+        verify(botWebClient, times(2)).postUpdate(any(LinkUpdate.class));
     }
 }
 
