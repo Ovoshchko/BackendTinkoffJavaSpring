@@ -8,7 +8,7 @@ public record LinkUpdate(
     @NotNull(message = "Идентификатор должен существовать")
     Long id,
     URI url,
-    String description,
+    List<String> description,
     List<Long> tgChatIds
 ) {
 }

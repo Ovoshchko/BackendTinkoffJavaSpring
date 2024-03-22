@@ -35,7 +35,7 @@ public class JdbcLinkService implements LinkService {
         try {
             return jdbcLinkRepository.add(tgChatId, addLinkRequest.link());
         } catch (DataIntegrityViolationException exception) {
-            throw new NotFoundException("Вы еще не зарегестрированы. Пожалуйста, сделайте это в ближайшее время.");
+            throw new NotFoundException(USER_NOT_FOUND);
         }
     }
 

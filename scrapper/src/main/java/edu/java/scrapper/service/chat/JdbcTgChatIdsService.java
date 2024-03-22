@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JdbcTgChatIdsService implements TgChatIdsService {
 
-    public static final String ALREADY_EXISTS_RESPONSE = "Этот пользователь уже зарегистрирован";
     private final UserRepository jdbcUserRepository;
 
     public void registerUserChat(Long id) {

@@ -65,6 +65,8 @@ public class JdbcLinkRepository implements LinkRepository {
             jdbcTemplate.update(userLinkQuery.getDeleteFromUserlink(), id, linkIds.get(0));
         }
 
+        jdbcTemplate.update(linksQuery.getDeleteFromLinks(), linkIds.get(0));
+
         return new LinkResponse(id, link);
     }
 

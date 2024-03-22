@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class UpdateControllerTest {
 
-    private final static LinkUpdate LINK_UPDATE = new LinkUpdate(1L, "https://github.com", "desc", List.of(1L, 2L));
+    private final static LinkUpdate LINK_UPDATE = new LinkUpdate(1L, "https://github.com", List.of("desc"), List.of(1L, 2L));
 
     @Mock
     private UpdateService updateService;

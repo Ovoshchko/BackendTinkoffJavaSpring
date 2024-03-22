@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SchedulerParams {
 
-    private final UserLinkRepository userLinkRepository;
-    private final LinkRepository linkRepository;
+    private final UserLinkRepository jdbcUserLinkRepository;
+    private final LinkRepository jdbcLinkRepository;
     private final ApplicationConfig.Scheduler scheduler;
     private final BotService botService;
     private final GithubClient githubWebClient;

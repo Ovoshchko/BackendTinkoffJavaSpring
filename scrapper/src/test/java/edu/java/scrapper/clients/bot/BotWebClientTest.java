@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BotWebClientTest {
 
     public static final LinkUpdate LINK_UPDATE =
-        new LinkUpdate(1L, URI.create("https://ok.com"), "ok", List.of(1L, 2L));
+        new LinkUpdate(1L, URI.create("https://ok.com"), List.of("ok"), List.of(1L, 2L));
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
