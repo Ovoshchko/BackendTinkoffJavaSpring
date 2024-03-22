@@ -10,8 +10,6 @@ import edu.java.bot.commands.single_commands.ListCommand;
 import edu.java.bot.commands.single_commands.StartCommand;
 import edu.java.bot.commands.single_commands.TrackCommand;
 import edu.java.bot.commands.single_commands.UntrackCommand;
-import edu.java.bot.data_base_imitation.LinksDB;
-import edu.java.bot.data_base_imitation.UserDB;
 import edu.java.bot.link_validators.LinkValidation;
 import edu.java.bot.service.ScrapperService;
 import edu.java.bot.utils.LinkTypes;

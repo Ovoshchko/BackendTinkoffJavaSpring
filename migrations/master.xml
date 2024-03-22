@@ -6,19 +6,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd
                    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="LinkViewer" author="Ovoshchko">
-        <sqlFile path="scripts/01-LinkViewer.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="Users" author="Ovoshchko">
-        <sqlFile path="scripts/02-Users.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="Links" author="Ovoshchko">
-        <sqlFile path="scripts/03-Links.sql" relativeToChangelogFile="true"/>
-    </changeSet>
-
-    <changeSet id="UserLink" author="Ovoshchko">
-        <sqlFile path="scripts/04-UserLink.sql" relativeToChangelogFile="true"/>
-    </changeSet>
+    <includeAll path="scripts/"/>
 </databaseChangeLog>

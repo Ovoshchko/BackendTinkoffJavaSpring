@@ -6,7 +6,7 @@ app:
 
 api:
   bot:
-    baseUrl: https://localhost:8090/
+    baseUrl: http://localhost:8090/
   github:
     baseUrl: https://api.github.com/
   stackoverflow:
@@ -19,8 +19,16 @@ springdoc:
     path: /swagger-ui.html
 
 spring:
+  liquibase:
+    enabled: false
   application:
     name: scrapper
+  datasource:
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/scrapper
+    schema: linkviewer
+    username: postgres
+    password: postgres
 
 server:
   port: 8080

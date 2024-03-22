@@ -1,14 +1,24 @@
 package edu.java.bot.service;
 
+import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.dto.request.LinkUpdate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import edu.java.bot.listener.CommandListener;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class UpdateService {
 
-    public ResponseEntity postUpdate(LinkUpdate linkUpdate) {
-        return ResponseEntity.status(HttpStatus.OK).body("Обновление обработано");
+    private final CommandListener commandListener;
+
+    public void postUpdate(LinkUpdate linkUpdate) {
+
+        for (Long id : linkUpdate.tgChatIds()) {
+            commandListener.sendMessage(new SendMessage(
+                id,
+                linkUpdate.url() + " " + linkUpdate.description()
+            ));
+        }
     }
 }

@@ -1,9 +1,8 @@
 package edu.java.bot.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import java.net.URI;
 
 public record AddLinkRequest(
-    @NotBlank(message = "Ссылка не должна быть пустой")
-    String link
+    URI link
 ) {
 }
