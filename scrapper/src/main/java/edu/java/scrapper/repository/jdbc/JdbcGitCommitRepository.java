@@ -7,7 +7,6 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -33,9 +32,7 @@ public class JdbcGitCommitRepository implements GitCommitRepository {
                 new Commit.CommitData(
                     new Commit.CommitData.Author(
                         resultSet.getString(NAME_NAME),
-                        resultSet.getTimestamp(MADE_DATE_NAME).toInstant()
-                            .atOffset(ZoneOffset.systemDefault().getRules()
-                                .getOffset(Instant.now()))
+                        resultSet.getTimestamp(MADE_DATE_NAME).toLocalDateTime().atOffset(ZoneOffset.UTC)
                     ),
                     URI.create(resultSet.getString(URL_NAME)),
                     resultSet.getInt(COMMENT_NUMBER_NAME)
@@ -53,7 +50,7 @@ public class JdbcGitCommitRepository implements GitCommitRepository {
         return jdbcTemplate.update(
             gitCommitQuery.getAddCommit(),
             commit.commit().author().name(),
-            Timestamp.valueOf(commit.commit().author().date().toLocalDateTime()),
+            Timestamp.valueOf(commit.commit().author().date().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()),
             commit.commit().url().toString(),
             commit.commit().commentCount()
         );

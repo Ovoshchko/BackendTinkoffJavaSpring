@@ -27,7 +27,9 @@ class UserLinkRepositoryTest extends IntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
+    @Transactional
     void setInit() {
+
         jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement("INSERT INTO users VALUES (?, now());");
             statement.setLong(1, USER_ID);
@@ -65,7 +67,6 @@ class UserLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @Rollback
     void getAllLinksByUserId() {
         for (UserLinkRepository userLinkRepository : userLinkRepositories) {
             List<Link> links = userLinkRepository.getAllLinksByUserId(USER_ID).stream().toList();
@@ -76,7 +77,6 @@ class UserLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @Rollback
     void getAllUsersByLink() {
 
         Long linkId = jdbcTemplate.queryForObject(

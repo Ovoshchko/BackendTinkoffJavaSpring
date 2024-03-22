@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,12 @@ class LinkRepositoryTest extends IntegrationTest {
         });
     }
 
+    @AfterEach
+    void setEnd() {
+        jdbcTemplate.update("DELETE FROM userlink;");
+        jdbcTemplate.update("DELETE FROM links;");
+        jdbcTemplate.update("DELETE FROM users;");
+    }
     @Test
     @Transactional
     @Rollback

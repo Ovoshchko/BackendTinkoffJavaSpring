@@ -2,22 +2,19 @@ package edu.java.scrapper.repository;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.dto.github.Commit;
+import java.net.URI;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.net.URI;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +25,7 @@ class GitCommitRepositoryTest extends IntegrationTest {
     private static final Commit COMMIT = new Commit(new Commit.CommitData(
         new Commit.CommitData.Author(
             "Ovoshchko",
-            OffsetDateTime.parse("2022-12-04T18:16:29+03:00")
+            OffsetDateTime.parse("2022-12-04T18:16:29z")
         ),
         URI.create("https://example.com"),
         0
@@ -47,9 +44,8 @@ class GitCommitRepositoryTest extends IntegrationTest {
             statement.setString(1, COMMIT.commit().author().name());
             statement.setTimestamp(
                 2,
-                Timestamp.valueOf(COMMIT.commit().author().date().toLocalDateTime()
-                    .atOffset(ZoneOffset.systemDefault().getRules()
-                        .getOffset(Instant.now())).toLocalDateTime())
+                Timestamp.valueOf(COMMIT.commit().author().date().toInstant().atOffset(ZoneOffset.UTC)
+                    .toLocalDateTime())
             );
             statement.setString(3, COMMIT.commit().url().toString());
             statement.setInt(4, COMMIT.commit().commentCount());
@@ -77,19 +73,16 @@ class GitCommitRepositoryTest extends IntegrationTest {
 
             List<Commit> commitList = jdbcTemplate.query(
                 "SELECT * FROM gitcommits;",
-                (ResultSet resultSet, int rowNum) ->
-                    new Commit(
-                        new Commit.CommitData(
-                            new Commit.CommitData.Author(
-                                resultSet.getString("name"),
-                                resultSet.getTimestamp("made_date").toInstant()
-                                    .atOffset(ZoneOffset.systemDefault().getRules()
-                                        .getOffset(Instant.now()))
-                            ),
-                            URI.create(resultSet.getString("url")),
-                            resultSet.getInt("comment_number")
-                        )
+                (ResultSet resultSet, int rowNum) -> new Commit(
+                    new Commit.CommitData(
+                        new Commit.CommitData.Author(
+                            resultSet.getString("name"),
+                            resultSet.getTimestamp("made_date").toLocalDateTime().atZone(ZoneOffset.UTC).toOffsetDateTime()
+                        ),
+                        URI.create(resultSet.getString("url")),
+                        resultSet.getInt("comment_number")
                     )
+                )
             );
 
             assertEquals(1, commitList.size());

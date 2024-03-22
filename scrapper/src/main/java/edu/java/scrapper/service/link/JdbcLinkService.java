@@ -10,7 +10,6 @@ import edu.java.scrapper.repository.UserLinkRepository;
 import java.net.URI;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 

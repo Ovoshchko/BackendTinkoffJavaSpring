@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LinkController {
 
-    private final LinkService jooqLinkService;
+    private final LinkService jdbcLinkService;
 
     @SneakyThrows
     @GetMapping
     @Operation(summary = "Получение всех отслеживаемых ссылок")
     public ResponseEntity getAllLinks(@RequestParam("Tg-Chat-Id") Long tgChatId) {
-        return ResponseEntity.status(HttpStatus.OK).body(jooqLinkService.getAllLinks(tgChatId));
+        return ResponseEntity.status(HttpStatus.OK).body(jdbcLinkService.getAllLinks(tgChatId));
     }
 
     @PostMapping
@@ -37,7 +37,7 @@ public class LinkController {
         @RequestParam("Tg-Chat-Id") Long tgChatId,
         @RequestBody @Valid AddLinkRequest addLinkRequest
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(jooqLinkService.addLink(tgChatId, addLinkRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(jdbcLinkService.addLink(tgChatId, addLinkRequest));
     }
 
     @SneakyThrows
@@ -47,6 +47,6 @@ public class LinkController {
         @RequestParam("Tg-Chat-Id") Long tgChatId,
         @RequestBody @Valid RemoveLinkRequest removeLinkRequest
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(jooqLinkService.deleteLink(tgChatId, removeLinkRequest));
+        return ResponseEntity.status(HttpStatus.OK).body(jdbcLinkService.deleteLink(tgChatId, removeLinkRequest));
     }
 }

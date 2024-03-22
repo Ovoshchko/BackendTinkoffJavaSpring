@@ -28,12 +28,12 @@ class UserRepositoryTest extends IntegrationTest {
     @Rollback
     void findAll() {
 
-        jdbcTemplate.update("INSERT INTO users VALUES (12345, now());");
+        jdbcTemplate.update("INSERT INTO users VALUES (?, now()), (23, now());", USER_ID);
 
         for (UserRepository userRepository: userRepositories) {
             List<User> users = userRepository.findAll();
 
-            assertEquals(1, users.size());
+            assertEquals(2, users.size());
             assertEquals(users.get(0).tgId(), USER_ID);
         }
     }
@@ -65,7 +65,7 @@ class UserRepositoryTest extends IntegrationTest {
     void add() {
 
         for (UserRepository userRepository: userRepositories) {
-            jdbcTemplate.update("DELETE FROM users;");
+            jdbcTemplate.update("DELETE FROM users WHERE tg_id = ?;", USER_ID);
             userRepository.add(USER_ID);
 
             List<User> users = jdbcTemplate.query("SELECT * FROM users;", (ResultSet resultSet, int rowNum) ->

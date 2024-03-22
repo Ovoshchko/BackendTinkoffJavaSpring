@@ -5,7 +5,6 @@ import edu.java.scrapper.domain.jooq.linkviewer.tables.records.GitcommitsRecord;
 import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.repository.GitCommitRepository;
 import java.net.URI;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,8 +29,7 @@ public class JooqGitCommitRepository implements GitCommitRepository {
                 new Commit.CommitData(
                     new Commit.CommitData.Author(
                         commitRecord.getName(),
-                        commitRecord.getMadeDate().atOffset(ZoneOffset.systemDefault().getRules()
-                            .getOffset(Instant.now()))
+                        commitRecord.getMadeDate().atZone(ZoneOffset.UTC).toOffsetDateTime()
                     ),
                     URI.create(commitRecord.getUrl()),
                     commitRecord.getCommentNumber().intValue()
@@ -46,7 +44,10 @@ public class JooqGitCommitRepository implements GitCommitRepository {
             .insertInto(Tables.GITCOMMITS)
             .set(Tables.GITCOMMITS.NAME, commit.commit().author().name())
             .set(Tables.GITCOMMITS.URL, commit.commit().url().toString())
-            .set(Tables.GITCOMMITS.MADE_DATE, commit.commit().author().date().toLocalDateTime())
+            .set(
+                Tables.GITCOMMITS.MADE_DATE,
+                commit.commit().author().date().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()
+            )
             .set(Tables.GITCOMMITS.COMMENT_NUMBER, (long) commit.commit().commentCount())
             .execute();
     }
