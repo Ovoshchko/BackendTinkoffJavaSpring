@@ -67,7 +67,6 @@ class UserLinkRepositoryTest extends IntegrationTest {
     @Test
     @Rollback
     void getAllLinksByUserId() {
-
         for (UserLinkRepository userLinkRepository : userLinkRepositories) {
             List<Link> links = userLinkRepository.getAllLinksByUserId(USER_ID).stream().toList();
 

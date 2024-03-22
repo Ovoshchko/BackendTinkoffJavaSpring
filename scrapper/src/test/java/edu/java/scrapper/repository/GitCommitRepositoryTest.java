@@ -72,6 +72,7 @@ class GitCommitRepositoryTest extends IntegrationTest {
 
         for (GitCommitRepository gitCommitRepository : gitCommitRepositories) {
             jdbcTemplate.update("DELETE FROM gitcommits;");
+
             gitCommitRepository.addCommit(COMMIT);
 
             List<Commit> commitList = jdbcTemplate.query(

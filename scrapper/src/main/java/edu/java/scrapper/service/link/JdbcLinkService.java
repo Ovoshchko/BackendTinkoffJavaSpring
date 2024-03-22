@@ -21,7 +21,6 @@ public class JdbcLinkService implements LinkService {
     private final LinkRepository jdbcLinkRepository;
     private final UserLinkRepository jdbcUserLinkRepository;
 
-    @SneakyThrows
     public ListLinksResponse getAllLinks(Long tgChatId) {
         List<LinkResponse> linkResponses = jdbcUserLinkRepository.getAllLinksByUserId(tgChatId)
             .stream()
@@ -30,7 +29,6 @@ public class JdbcLinkService implements LinkService {
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
-    @SneakyThrows
     public LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         try {
             return jdbcLinkRepository.add(tgChatId, addLinkRequest.link());
@@ -39,7 +37,6 @@ public class JdbcLinkService implements LinkService {
         }
     }
 
-    @SneakyThrows
     public LinkResponse deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
         return jdbcLinkRepository.delete(tgChatId, removeLinkRequest.link());
     }
