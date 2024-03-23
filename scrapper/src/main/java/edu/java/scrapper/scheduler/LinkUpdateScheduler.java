@@ -1,9 +1,9 @@
 package edu.java.scrapper.scheduler;
 
 import edu.java.scrapper.configuration.SchedulerParams;
-import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.service.github.GitService;
+import edu.java.scrapper.service.stackoverflow.StackoverflowService;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +19,7 @@ public class LinkUpdateScheduler {
     public static final String GITHUB_HOST = "github.com";
     public static final String STACKOVERFLOW_HOST = "stackoverflow.com";
     private final GitService webGitService;
+    private final StackoverflowService webStackoverflowService;
     private final SchedulerParams params;
 
     @Scheduled(fixedDelayString = "#{@getScheduler.interval.toMillis()}")
@@ -31,25 +32,31 @@ public class LinkUpdateScheduler {
 
         for (Link link : links) {
             users = params.getJdbcUserLinkRepository().getAllUsersByLink(link).stream().toList();
-            URI uri = URI.create(link.getLink());
-            if (GITHUB_HOST.equals(uri.getHost())) {
+            URI url = URI.create(link.getLink());
+            if (GITHUB_HOST.equals(url.getHost())) {
                 List<String> description =
-                    webGitService.checkForUpdates(uri, LocalDateTime.now().minus(params.getScheduler().interval()));
+                    webGitService.checkForUpdates(
+                        url,
+                        LocalDateTime.now().minus(params.getScheduler().forceCheckDelay())
+                    );
                 if (!description.isEmpty()) {
                     params.getBotService().postUpdate(
                         link.getId(),
-                        uri,
+                        url,
                         description,
                         users
                     );
                 }
-            } else if (STACKOVERFLOW_HOST.equals(uri.getHost())) {
-                StackoverflowResponse response = params.getStackoverflowWebClient().checkForUpdates(uri);
-                if (LocalDateTime.now().minus(params.getScheduler().interval())
-                    .isBefore(response.items().get(0).lastActivityDate().toLocalDateTime())) {
+            } else if (STACKOVERFLOW_HOST.equals(url.getHost())) {
+                List<String> description =
+                    webStackoverflowService.checkForUpdates(
+                        url,
+                        LocalDateTime.now().minus(params.getScheduler().forceCheckDelay())
+                    );
+                if (!description.isEmpty()) {
                     params.getBotService().postUpdate(
                         link.getId(),
-                        uri,
+                        url,
                         List.of(UPDATED),
                         users
                     );

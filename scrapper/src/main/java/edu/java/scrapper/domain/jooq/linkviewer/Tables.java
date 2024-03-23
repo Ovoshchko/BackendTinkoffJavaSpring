@@ -6,6 +6,7 @@ package edu.java.scrapper.domain.jooq.linkviewer;
 
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Gitcommits;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Links;
+import edu.java.scrapper.domain.jooq.linkviewer.tables.Stackoverflowanswers;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Userlink;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Users;
 
@@ -34,6 +35,11 @@ public class Tables {
      * The table <code>LINKVIEWER.LINKS</code>.
      */
     public static final Links LINKS = Links.LINKS;
+
+    /**
+     * The table <code>LINKVIEWER.STACKOVERFLOWANSWERS</code>.
+     */
+    public static final Stackoverflowanswers STACKOVERFLOWANSWERS = Stackoverflowanswers.STACKOVERFLOWANSWERS;
 
     /**
      * The table <code>LINKVIEWER.USERLINK</code>.

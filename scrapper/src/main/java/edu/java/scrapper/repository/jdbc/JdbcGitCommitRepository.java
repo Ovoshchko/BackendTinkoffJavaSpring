@@ -21,6 +21,21 @@ public class JdbcGitCommitRepository implements GitCommitRepository {
     private final GitCommitQuery gitCommitQuery;
 
     @Override
+    public Integer addCommit(Commit commit) {
+        List<Commit> existingCommit = getCommitByUrl(commit.commit().url());
+        if ((existingCommit != null) && (!existingCommit.isEmpty())) {
+            return 1;
+        }
+        return jdbcTemplate.update(
+            gitCommitQuery.getAddCommit(),
+            commit.commit().author().name(),
+            Timestamp.valueOf(commit.commit().author().date().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()),
+            commit.commit().url().toString(),
+            commit.commit().commentCount()
+        );
+    }
+
+    @Override
     public List<Commit> getCommitByUrl(URI url) {
         return jdbcTemplate.query(
             con -> {
@@ -41,18 +56,4 @@ public class JdbcGitCommitRepository implements GitCommitRepository {
         );
     }
 
-    @Override
-    public Integer addCommit(Commit commit) {
-        List<Commit> existingCommit = getCommitByUrl(commit.commit().url());
-        if ((existingCommit != null) && (!existingCommit.isEmpty())) {
-            return 1;
-        }
-        return jdbcTemplate.update(
-            gitCommitQuery.getAddCommit(),
-            commit.commit().author().name(),
-            Timestamp.valueOf(commit.commit().author().date().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()),
-            commit.commit().url().toString(),
-            commit.commit().commentCount()
-        );
-    }
 }

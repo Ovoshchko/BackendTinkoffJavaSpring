@@ -7,6 +7,7 @@ package edu.java.scrapper.domain.jooq.linkviewer;
 import edu.java.scrapper.domain.jooq.DefaultCatalog;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Gitcommits;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Links;
+import edu.java.scrapper.domain.jooq.linkviewer.tables.Stackoverflowanswers;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Userlink;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Users;
 
@@ -52,6 +53,11 @@ public class Linkviewer extends SchemaImpl {
     public final Links LINKS = Links.LINKS;
 
     /**
+     * The table <code>LINKVIEWER.STACKOVERFLOWANSWERS</code>.
+     */
+    public final Stackoverflowanswers STACKOVERFLOWANSWERS = Stackoverflowanswers.STACKOVERFLOWANSWERS;
+
+    /**
      * The table <code>LINKVIEWER.USERLINK</code>.
      */
     public final Userlink USERLINK = Userlink.USERLINK;
@@ -81,6 +87,7 @@ public class Linkviewer extends SchemaImpl {
         return Arrays.asList(
             Gitcommits.GITCOMMITS,
             Links.LINKS,
+            Stackoverflowanswers.STACKOVERFLOWANSWERS,
             Userlink.USERLINK,
             Users.USERS
         );
