@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class DatabaseTest {
-
     //Мы шпионы, никто не узнает, что мы селектили)
     @ParameterizedTest
     @ValueSource(strings = {"users", "links", "userlink"})
