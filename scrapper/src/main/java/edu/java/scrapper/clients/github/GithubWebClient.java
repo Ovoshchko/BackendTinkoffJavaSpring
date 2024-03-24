@@ -1,13 +1,14 @@
 package edu.java.scrapper.clients.github;
 
+import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.dto.github.GithubResponse;
-import java.net.URI;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class GithubWebClient implements GithubClient {
 
-    private final static String ENDPOINT = "/repos/{owner}/{repo}";
+    private final static String REPO_ENDPOINT = "/repos/{owner}/{repo}";
+    private final static String COMMITS_ENDPOINT = REPO_ENDPOINT + "/commits";
     private final WebClient webClient;
 
     public GithubWebClient(String baseUrl) {
@@ -17,7 +18,7 @@ public class GithubWebClient implements GithubClient {
     @Override
     public GithubResponse fetchUpdate(String user, String repo) {
         return webClient.get()
-            .uri(ENDPOINT, user, repo)
+            .uri(REPO_ENDPOINT, user, repo)
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(GithubResponse.class)
@@ -25,12 +26,13 @@ public class GithubWebClient implements GithubClient {
     }
 
     @Override
-    public GithubResponse checkForUpdate(URI url) {
-        String[] path = url.getPath().split("/");
+    public Commit[] checkCommits(String user, String repo) {
 
-        String user = path[1];
-        String repo = path[2];
-
-        return fetchUpdate(user, repo);
+        return webClient.get()
+            .uri(COMMITS_ENDPOINT, user, repo)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(Commit[].class)
+            .block();
     }
 }

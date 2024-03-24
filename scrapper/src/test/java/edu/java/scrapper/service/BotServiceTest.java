@@ -36,11 +36,11 @@ public class BotServiceTest {
 
         when(botWebClient.postUpdate(any(LinkUpdate.class))).thenReturn(EXPECTED_ANSWER);
 
-        String response = botService.postUpdate(TG_CHAT_ID, URL, DESCRIPTION, TG_CHAT_IDS);
+        String response = botService.postUpdate(TG_CHAT_ID, URL, List.of(DESCRIPTION), TG_CHAT_IDS);
 
         assertEquals(EXPECTED_ANSWER, response);
 
-        botService.postUpdate(TG_CHAT_ID, URL, DESCRIPTION, TG_CHAT_IDS);
+        botService.postUpdate(TG_CHAT_ID, URL, List.of(DESCRIPTION), TG_CHAT_IDS);
 
         verify(botWebClient, times(2)).postUpdate(any(LinkUpdate.class));
     }

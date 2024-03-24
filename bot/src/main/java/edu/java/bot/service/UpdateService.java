@@ -14,10 +14,12 @@ public class UpdateService {
 
     public void postUpdate(LinkUpdate linkUpdate) {
 
+        String description = String.join("", linkUpdate.description());
+
         for (Long id : linkUpdate.tgChatIds()) {
             commandListener.sendMessage(new SendMessage(
                 id,
-                linkUpdate.url() + " " + linkUpdate.description()
+                description
             ));
         }
     }

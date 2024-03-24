@@ -2,10 +2,10 @@ package edu.java.scrapper.controller;
 
 import edu.java.scrapper.dto.request.AddLinkRequest;
 import edu.java.scrapper.dto.request.RemoveLinkRequest;
-import edu.java.scrapper.service.link.JdbcLinkService;
+import edu.java.scrapper.service.link.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/links")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LinkController {
 
-    private final JdbcLinkService jdbcLinkService;
+    private final LinkService jdbcLinkService;
 
     @SneakyThrows
     @GetMapping

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UpdateServiceTest {
 
-    private final static LinkUpdate VALID_LINK_UPDATE = new LinkUpdate(1L, "https://ok.com", "ok", List.of(1L));
+    private final static LinkUpdate VALID_LINK_UPDATE = new LinkUpdate(1L, "https://ok.com", List.of("ok"), List.of(1L));
 
     @Mock
     private CommandListener listener;

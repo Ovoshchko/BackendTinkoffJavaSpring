@@ -7,6 +7,8 @@ import edu.java.scrapper.dto.response.ListLinksResponse;
 
 public interface LinkService {
 
+    String USER_NOT_FOUND = "Вы еще не зарегестрированы. Пожалуйста, сделайте это в ближайшее время.";
+
     ListLinksResponse getAllLinks(Long tgChatId);
 
     LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest);

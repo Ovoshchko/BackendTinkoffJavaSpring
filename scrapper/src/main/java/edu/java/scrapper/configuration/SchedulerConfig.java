@@ -1,18 +1,22 @@
 package edu.java.scrapper.configuration;
 
 import edu.java.scrapper.scheduler.LinkUpdateScheduler;
-import lombok.AllArgsConstructor;
+import edu.java.scrapper.service.github.GitService;
+import edu.java.scrapper.service.stackoverflow.StackoverflowService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SchedulerConfig {
 
-    private final SchedulerParams params;
+    private final GitService gitService;
+    private final StackoverflowService stackoverflowService;
+    private final SchedulerParams schedulerParams;
 
     @Bean
     public LinkUpdateScheduler getLinkUpdateScheduler() {
-        return new LinkUpdateScheduler(params);
+        return new LinkUpdateScheduler(gitService, stackoverflowService, schedulerParams);
     }
 }

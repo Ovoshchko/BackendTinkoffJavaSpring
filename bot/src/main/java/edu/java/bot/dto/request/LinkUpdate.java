@@ -9,7 +9,7 @@ public record LinkUpdate(
     Long id,
     @NotBlank(message = "Ссылка не должна быть пустой")
     String url,
-    String description,
+    List<String> description,
     List<Long> tgChatIds
 ) {
 }

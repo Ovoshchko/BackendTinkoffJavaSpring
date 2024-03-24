@@ -3,13 +3,14 @@ package edu.java.scrapper.clients.stackoverflow;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Body;
+import edu.java.scrapper.dto.stackoverflow.Answer;
+import edu.java.scrapper.dto.stackoverflow.ListAnswer;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -46,6 +47,35 @@ class StackoverflowWebClientTest {
         }
         """;
 
+    private final static String ANSWER_JSON = """
+        {
+            "items": [
+                {
+                    "owner": {
+                        "account_id": 1222065,
+                        "reputation": 133,
+                        "user_id": 1188515,
+                        "user_type": "registered",
+                        "profile_image": "https://www.gravatar.com/avatar/3bfddfd9693618e41245153f2de2ec70?s=256&d=identicon&r=PG",
+                        "display_name": "Pankaj Patel",
+                        "link": "https://stackoverflow.com/users/1188515/pankaj-patel"
+                    },
+                    "is_accepted": false,
+                    "score": 0,
+                    "last_activity_date": 1535232298,
+                    "last_edit_date": 1535232298,
+                    "creation_date": 1535230721,
+                    "answer_id": 52021173,
+                    "question_id": 52020732,
+                    "content_license": "CC BY-SA 4.0"
+                }
+            ],
+            "has_more": false,
+            "quota_max": 300,
+            "quota_remaining": 266
+        }
+        """;
+
     private final static StackoverflowResponse ANSWER = new StackoverflowResponse(
         List.of(
             new StackoverflowResponse.QuestionResponse(
@@ -56,8 +86,17 @@ class StackoverflowWebClientTest {
             )
         )
     );
+
+    private final static ListAnswer ANSWER_ANSWER = new ListAnswer(
+        List.of(
+            new Answer(
+                new Answer.Owner("Pankaj Patel"),
+                52021173,
+                52020732
+            )
+        )
+    );
     private final static Long ID = 72647357L;
-    public static final URI STACKOVERFLOW_URL = URI.create("https://stackoverflow.com/questions/" + ID + "/ok");
 
     private static WireMockServer wireMockServer;
 
@@ -73,17 +112,14 @@ class StackoverflowWebClientTest {
         wireMockServer.stop();
     }
 
-    @BeforeEach
-    void setInit() {
+    @Test
+    void fetchUpdate() {
         wireMockServer.stubFor(get(urlPathEqualTo("/questions/" + ID))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withResponseBody(new Body(SERVER_RESPONSE))));
-    }
 
-    @Test
-    void fetchUpdate() {
         String baseUrl = "http://localhost:" + wireMockServer.port();
 
         StackoverflowClient client = new StackoverflowWebClient(baseUrl);
@@ -93,13 +129,19 @@ class StackoverflowWebClientTest {
     }
 
     @Test
-    void checkForUpdate() {
+    void checkForAnswers() {
+        wireMockServer.stubFor(get(urlPathEqualTo("/questions/" + ID + "/answers"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .withResponseBody(new Body(ANSWER_JSON))));
+
         String baseUrl = "http://localhost:" + wireMockServer.port();
 
         StackoverflowClient client = new StackoverflowWebClient(baseUrl);
-        StackoverflowResponse response = client.checkForUpdates(STACKOVERFLOW_URL);
+        ListAnswer response = client.checkForAnswers(ID);
 
-        assertThat(response).isEqualTo(ANSWER);
+        assertThat(response).isEqualTo(ANSWER_ANSWER);
     }
 
 }

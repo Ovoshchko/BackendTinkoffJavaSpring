@@ -1,8 +1,7 @@
-package edu.java.scrapper.service;
+package edu.java.scrapper.service.chat;
 
 import edu.java.scrapper.exception.AlreadyExistsException;
 import edu.java.scrapper.repository.jdbc.JdbcUserRepository;
-import edu.java.scrapper.service.chat.JdbcTgChatIdsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
