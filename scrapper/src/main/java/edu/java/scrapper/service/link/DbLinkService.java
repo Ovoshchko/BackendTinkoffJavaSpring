@@ -7,11 +7,10 @@ import edu.java.scrapper.dto.response.ListLinksResponse;
 import edu.java.scrapper.exception.NotFoundException;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
-import lombok.Data;
-import org.springframework.dao.DataIntegrityViolationException;
-
 import java.net.URI;
 import java.util.List;
+import lombok.Data;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Data
 public class DbLinkService implements LinkService {

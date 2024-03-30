@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
 public class WebGitService implements GitService {

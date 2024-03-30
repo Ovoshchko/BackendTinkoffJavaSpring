@@ -1,13 +1,12 @@
 package edu.java.scrapper.repository.jooq;
 
-import edu.java.scrapper.domain.jooq.linkviewer.Tables;
 import edu.java.scrapper.model.GitCommit;
 import edu.java.scrapper.repository.GitCommitRepository;
+import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
-import java.net.URI;
-import java.util.List;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.GITCOMMITS;
 
 @Repository

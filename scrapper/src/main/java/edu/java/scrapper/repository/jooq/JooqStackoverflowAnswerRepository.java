@@ -1,7 +1,5 @@
 package edu.java.scrapper.repository.jooq;
 
-import edu.java.scrapper.domain.jooq.linkviewer.Tables;
-import edu.java.scrapper.dto.stackoverflow.Answer;
 import edu.java.scrapper.model.StackoverflowAnswer;
 import edu.java.scrapper.repository.StackoverflowAnswerRepository;
 import java.util.List;

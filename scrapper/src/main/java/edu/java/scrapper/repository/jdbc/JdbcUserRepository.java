@@ -43,6 +43,7 @@ public class JdbcUserRepository implements UserRepository {
     @Transactional
     public Integer add(long id) {
         return jdbcTemplate.update(userQuery.getInsertUser(), id,
-            Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime()));
+            Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+        );
     }
 }

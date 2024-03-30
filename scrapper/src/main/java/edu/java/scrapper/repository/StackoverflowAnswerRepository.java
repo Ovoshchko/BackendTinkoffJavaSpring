@@ -1,6 +1,5 @@
 package edu.java.scrapper.repository;
 
-import edu.java.scrapper.dto.stackoverflow.Answer;
 import edu.java.scrapper.model.StackoverflowAnswer;
 import java.util.List;
 

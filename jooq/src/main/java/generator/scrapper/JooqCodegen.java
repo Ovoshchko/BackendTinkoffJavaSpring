@@ -10,6 +10,7 @@ import org.jooq.meta.jaxb.Property;
 import org.jooq.meta.jaxb.Target;
 
 @UtilityClass
+@SuppressWarnings("UncommentedMain")
 public class JooqCodegen {
 
     public static void main(String[] args) throws Exception {
