@@ -186,7 +186,7 @@ class LinkRepositoryTest extends IntegrationTest {
             List<Link> response = linkRepository.findLinksUpdatedMoreThanNMinutesAgo(MINUTES).stream().toList();
 
             assertEquals(1, response.size());
-            assertTrue(response.get(0).getLastCheck().isBefore(withinNMinutes));
+            assertTrue(response.get(0).getLastCheck().isBefore(LocalDateTime.now().minusMinutes(MINUTES)));
             assertEquals(LINK_URI_2.toString(), response.get(0).getLink());
         }
     }
