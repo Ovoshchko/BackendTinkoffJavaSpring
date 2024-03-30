@@ -4,6 +4,7 @@
 package edu.java.scrapper.domain.jooq.linkviewer.tables;
 
 
+import edu.java.scrapper.domain.jooq.linkviewer.Keys;
 import edu.java.scrapper.domain.jooq.linkviewer.Linkviewer;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.records.StackoverflowanswersRecord;
 
@@ -25,6 +26,7 @@ import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
@@ -67,7 +69,7 @@ public class Stackoverflowanswers extends TableImpl<StackoverflowanswersRecord> 
     /**
      * The column <code>LINKVIEWER.STACKOVERFLOWANSWERS.ANSWER_ID</code>.
      */
-    public final TableField<StackoverflowanswersRecord, Long> ANSWER_ID = createField(DSL.name("ANSWER_ID"), SQLDataType.BIGINT, this, "");
+    public final TableField<StackoverflowanswersRecord, Long> ANSWER_ID = createField(DSL.name("ANSWER_ID"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>LINKVIEWER.STACKOVERFLOWANSWERS.QUESTION_ID</code>.
@@ -113,6 +115,12 @@ public class Stackoverflowanswers extends TableImpl<StackoverflowanswersRecord> 
     @Nullable
     public Schema getSchema() {
         return aliased() ? null : Linkviewer.LINKVIEWER;
+    }
+
+    @Override
+    @NotNull
+    public UniqueKey<StackoverflowanswersRecord> getPrimaryKey() {
+        return Keys.CONSTRAINT_4F;
     }
 
     @Override

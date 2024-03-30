@@ -25,12 +25,11 @@ public class JooqLinkService implements LinkService {
 
     @Override
     public ListLinksResponse getAllLinks(Long tgChatId) {
-        Collection<Link> links = jooqUserLinkRepository.getAllLinksByUserId(tgChatId);
-        List<LinkResponse> responses = new ArrayList<>();
-        for (Link link : links) {
-            responses.add(new LinkResponse(link.getId(), URI.create(link.getLink())));
-        }
-        return new ListLinksResponse(responses, responses.size());
+        List<LinkResponse> links = jooqUserLinkRepository.getAllLinksByUserId(tgChatId)
+            .stream()
+            .map(link -> new LinkResponse(tgChatId, URI.create(link.getLink())))
+            .toList();
+        return new ListLinksResponse(links, links.size());
     }
 
     @Override

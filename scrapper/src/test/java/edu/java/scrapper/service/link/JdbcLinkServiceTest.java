@@ -6,7 +6,6 @@ import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcUserLinkRepository;
-import edu.java.scrapper.service.link.JdbcLinkService;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +22,8 @@ public class JdbcLinkServiceTest {
 
     public static final long TG_CHAT_ID = 12345L;
     public static final URI URL = URI.create("https://example.com");
-    public static final Link LINK = new Link(TG_CHAT_ID, URL.toString(), LocalDateTime.now());
+    public static final Link LINK =
+        new Link().setId(TG_CHAT_ID).setLink(URL.toString()).setLastCheck(LocalDateTime.now());
     public static final LinkResponse LINK_RESPONSE = new LinkResponse(TG_CHAT_ID, URL);
     @Mock
     private JdbcLinkRepository jdbcLinkRepository;

@@ -4,19 +4,17 @@ import edu.java.scrapper.dto.request.AddLinkRequest;
 import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
-import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jooq.JooqLinkRepository;
 import edu.java.scrapper.repository.jooq.JooqUserLinkRepository;
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +22,8 @@ class JooqLinkServiceTest {
 
     public static final long TG_CHAT_ID = 12345L;
     public static final URI URL = URI.create("https://example.com");
-    public static final Link LINK = new Link(TG_CHAT_ID, URL.toString(), LocalDateTime.now());
+    public static final Link LINK =
+        new Link().setId(TG_CHAT_ID).setLink(URL.toString()).setLastCheck(LocalDateTime.now());
     public static final LinkResponse LINK_RESPONSE = new LinkResponse(TG_CHAT_ID, URL);
     @Mock
     private JooqLinkRepository jooqLinkRepository;

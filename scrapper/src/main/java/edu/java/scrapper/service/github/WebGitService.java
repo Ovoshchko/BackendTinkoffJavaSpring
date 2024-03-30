@@ -3,6 +3,7 @@ package edu.java.scrapper.service.github;
 import edu.java.scrapper.clients.github.GithubClient;
 import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.dto.github.GithubResponse;
+import edu.java.scrapper.model.GitCommit;
 import edu.java.scrapper.repository.GitCommitRepository;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -60,13 +61,16 @@ public class WebGitService implements GitService {
 
         List<String> stringCommits = new ArrayList<>();
         for (Commit commit : commits) {
-            List<Commit> existingCommit = jdbcGitCommitRepository.getCommitByUrl(commit.commit().url());
+            List<GitCommit> existingCommit = jdbcGitCommitRepository.getCommitByUrl(commit.commit().url());
             if (existingCommit.isEmpty()) {
-                jdbcGitCommitRepository.addCommit(commit);
-                stringCommits.add(commit.commit().url().toString() + " " + NEW_COMMIT + System.lineSeparator());
-            } else if (existingCommit.get(0).commit().commentCount() < commit.commit().commentCount()) {
+                jdbcGitCommitRepository.addCommit(new GitCommit().setName(commit.commit().author().name())
+                    .setMadeDate(commit.commit().author().date().toLocalDateTime())
+                    .setUrl(commit.commit().url().toString())
+                    .setCommentNumber((long) commit.commit().commentCount()));
+                stringCommits.add(commit.commit().url() + " " + NEW_COMMIT + System.lineSeparator());
+            } else if (existingCommit.get(0).getCommentNumber() < commit.commit().commentCount()) {
                 stringCommits.add(commit.commit().url().toString() + " " + NEW_COMMENTS_UPDATE
-                    + (commit.commit().commentCount() - existingCommit.get(0).commit().commentCount())
+                    + (commit.commit().commentCount() - existingCommit.get(0).getCommentNumber())
                     + System.lineSeparator());
             }
         }

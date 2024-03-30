@@ -4,6 +4,7 @@ import edu.java.scrapper.clients.stackoverflow.StackoverflowClient;
 import edu.java.scrapper.dto.stackoverflow.Answer;
 import edu.java.scrapper.dto.stackoverflow.ListAnswer;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
+import edu.java.scrapper.model.StackoverflowAnswer;
 import edu.java.scrapper.repository.StackoverflowAnswerRepository;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -36,7 +37,7 @@ public class WebStackoverflowService implements StackoverflowService {
                 ListAnswer answer = stackoverflowWebClient.checkForAnswers(questionId);
 
                 if ((answer.answers() != null) && (!answer.answers().isEmpty())) {
-                    description = processAnswers(answer.answers(), questionId);
+                    description = processAnswers(getStackOverflowAnswerFromDto(answer.answers()), questionId);
                 }
 
                 if (description.isEmpty()) {
@@ -50,19 +51,27 @@ public class WebStackoverflowService implements StackoverflowService {
         return description;
     }
 
-    private List<String> processAnswers(List<Answer> answers, long questionId) {
+    private List<String> processAnswers(List<StackoverflowAnswer> answers, long questionId) {
         List<String> stringAnswers = new ArrayList<>();
-        List<Answer> existingAnswers = jdbcStackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
+        List<StackoverflowAnswer> existingAnswers = jdbcStackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
         if (existingAnswers.size() < answers.size()) {
-            for (Answer answer : answers) {
+            for (StackoverflowAnswer answer : answers) {
                 if (!existingAnswers.contains(answer)) {
                     jdbcStackoverflowAnswerRepository.addAnswer(answer);
-                    stringAnswers.add("Появился новый ответ от пользователя " + answer.owner().displayName()
+                    stringAnswers.add("Появился новый ответ от пользователя " + answer.getName()
                         + System.lineSeparator());
                 }
             }
         }
         return stringAnswers;
+    }
+
+    private List<StackoverflowAnswer> getStackOverflowAnswerFromDto(List<Answer> answers) {
+        return answers.stream()
+            .map(answer -> new StackoverflowAnswer().setAnswerId(answer.answerId())
+                .setName(answer.owner().displayName())
+                .setQuestionId(answer.questionId()))
+            .toList();
     }
 
     private long getQuestionId(URI url) {

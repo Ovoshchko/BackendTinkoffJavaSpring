@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import javax.annotation.processing.Generated;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -44,7 +45,7 @@ public class Stackoverflowanswers implements Serializable {
     @ConstructorProperties({ "name", "answerId", "questionId" })
     public Stackoverflowanswers(
         @Nullable String name,
-        @Nullable Long answerId,
+        @NotNull Long answerId,
         @Nullable Long questionId
     ) {
         this.name = name;
@@ -71,7 +72,8 @@ public class Stackoverflowanswers implements Serializable {
     /**
      * Getter for <code>LINKVIEWER.STACKOVERFLOWANSWERS.ANSWER_ID</code>.
      */
-    @Nullable
+    @jakarta.validation.constraints.NotNull
+    @NotNull
     public Long getAnswerId() {
         return this.answerId;
     }
@@ -79,7 +81,7 @@ public class Stackoverflowanswers implements Serializable {
     /**
      * Setter for <code>LINKVIEWER.STACKOVERFLOWANSWERS.ANSWER_ID</code>.
      */
-    public void setAnswerId(@Nullable Long answerId) {
+    public void setAnswerId(@NotNull Long answerId) {
         this.answerId = answerId;
     }
 

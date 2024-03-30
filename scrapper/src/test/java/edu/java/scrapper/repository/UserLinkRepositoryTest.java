@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -87,7 +86,8 @@ class UserLinkRepositoryTest extends IntegrationTest {
 
         for (UserLinkRepository userLinkRepository : userLinkRepositories) {
             List<Long> userIds =
-                userLinkRepository.getAllUsersByLink(new Link(linkId, LINK_URI.toString(), LocalDateTime.now()))
+                userLinkRepository.getAllUsersByLink(new Link().setId(linkId).setLink(LINK_URI.toString())
+                        .setLastCheck(LocalDateTime.now()))
                     .stream().toList();
 
             assertEquals(1, userIds.size());

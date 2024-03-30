@@ -1,17 +1,19 @@
 package edu.java.scrapper.repository.jooq;
 
-import edu.java.scrapper.domain.jooq.linkviewer.Tables;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.scrapper.domain.jooq.linkviewer.Tables.LINKS;
+import static edu.java.scrapper.domain.jooq.linkviewer.Tables.USERLINK;
 import static org.jooq.impl.DSL.select;
 
 @Repository
@@ -24,16 +26,17 @@ public class JooqLinkRepository implements LinkRepository {
     @Transactional
     public LinkResponse add(long id, URI link) {
         long idResponse =
-            dsl.select(Tables.LINKS.ID).from(Tables.LINKS).where(Tables.LINKS.URL.eq(link.toString())).execute();
+            dsl.select(LINKS.ID).from(LINKS).where(LINKS.URL.eq(link.toString())).execute();
 
         if (idResponse == 0) {
-            idResponse = Objects.requireNonNull(dsl.insertInto(Tables.LINKS).set(Tables.LINKS.URL, link.toString())
-                    .set(Tables.LINKS.LAST_CHECK, LocalDateTime.now()).returning(Tables.LINKS.ID)
+            idResponse = Objects.requireNonNull(dsl.insertInto(LINKS).set(LINKS.URL, link.toString())
+                    .set(LINKS.LAST_CHECK, LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+                    .returning(LINKS.ID)
                     .fetchOne())
-                .getValue(Tables.LINKS.ID);
+                .getValue(LINKS.ID);
         }
 
-        dsl.insertInto(Tables.USERLINK).set(Tables.USERLINK.USER_ID, id).set(Tables.USERLINK.LINK_ID, idResponse)
+        dsl.insertInto(USERLINK).set(USERLINK.USER_ID, id).set(USERLINK.LINK_ID, idResponse)
             .execute();
 
         return new LinkResponse(id, link);
@@ -42,28 +45,22 @@ public class JooqLinkRepository implements LinkRepository {
     @Override
     @Transactional
     public LinkResponse delete(long id, URI link) {
-        dsl.deleteFrom(Tables.USERLINK).where(Tables.USERLINK.LINK_ID.in(select(Tables.LINKS.ID).from(Tables.LINKS)
-            .where(Tables.LINKS.URL.in(link.toString())))).execute();
-        dsl.deleteFrom(Tables.LINKS).where(Tables.LINKS.URL.eq(link.toString())).execute();
+        dsl.deleteFrom(USERLINK).where(USERLINK.LINK_ID.in(select(LINKS.ID).from(LINKS)
+            .where(LINKS.URL.in(link.toString())))).execute();
+        dsl.deleteFrom(LINKS).where(LINKS.URL.eq(link.toString())).execute();
         return new LinkResponse(id, link);
     }
 
     @Override
     public Collection<Link> listAll() {
-        return dsl.selectFrom(Tables.LINKS)
-            .fetch()
-            .map(rec -> {
-                String url = rec.get(Tables.LINKS.URL);
-                return new Link(
-                    rec.getId(),
-                    url,
-                    rec.getLastCheck()
-                );
-            });
+        return dsl.selectFrom(LINKS)
+            .fetchInto(Link.class);
     }
 
     @Override
     public Collection<Link> findLinksUpdatedMoreThanNMinutesAgo(long minutes) {
-        return null;
+        return dsl.selectFrom(LINKS)
+            .where(LINKS.LAST_CHECK.lessThan(LocalDateTime.now().minusMinutes(minutes)))
+            .fetchInto(Link.class);
     }
 }
