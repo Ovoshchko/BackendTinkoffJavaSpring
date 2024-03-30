@@ -10,18 +10,13 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-@Service
-@RequiredArgsConstructor
+@Data
 public class WebStackoverflowService implements StackoverflowService {
 
-    public static final String UNKNOWN_UPDATE = "Пришло обновление, но я не знаю какое(";
-    public static final String NOT_ANSWERS_UPDATE = "Что-то произошло. Но это было не в ответах";
-    public static final String BAD_LINK = "Плохая ссылка";
     private final StackoverflowClient stackoverflowWebClient;
-    private final StackoverflowAnswerRepository jdbcStackoverflowAnswerRepository;
+    private final StackoverflowAnswerRepository stackoverflowAnswerRepository;
 
     @Override
     public List<String> checkForUpdates(URI url, LocalDateTime time) {
@@ -53,11 +48,11 @@ public class WebStackoverflowService implements StackoverflowService {
 
     private List<String> processAnswers(List<StackoverflowAnswer> answers, long questionId) {
         List<String> stringAnswers = new ArrayList<>();
-        List<StackoverflowAnswer> existingAnswers = jdbcStackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
+        List<StackoverflowAnswer> existingAnswers = stackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
         if (existingAnswers.size() < answers.size()) {
             for (StackoverflowAnswer answer : answers) {
                 if (!existingAnswers.contains(answer)) {
-                    jdbcStackoverflowAnswerRepository.addAnswer(answer);
+                    stackoverflowAnswerRepository.addAnswer(answer);
                     stringAnswers.add("Появился новый ответ от пользователя " + answer.getName()
                         + System.lineSeparator());
                 }

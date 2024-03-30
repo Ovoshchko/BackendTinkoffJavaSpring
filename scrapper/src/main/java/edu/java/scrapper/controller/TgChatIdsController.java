@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TgChatIdsController {
 
-    private final TgChatIdsService jooqTgChatIdsService;
+    private final TgChatIdsService dbTgChatIdsService;
 
     @PostMapping
     @Operation(summary = "Добавление чата в список")
     public ResponseEntity registerUserChat(@PathVariable Long id) {
-        jooqTgChatIdsService.registerUserChat(id);
+        dbTgChatIdsService.registerUserChat(id);
         return ResponseEntity.status(HttpStatus.OK).body("Пользователь успешно добавлен.");
     }
 
     @DeleteMapping
     @Operation(summary = "Удаление чата из списка")
     public ResponseEntity deleteUserChat(@PathVariable Long id) {
-        jooqTgChatIdsService.deleteUserChat(id);
+        dbTgChatIdsService.deleteUserChat(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

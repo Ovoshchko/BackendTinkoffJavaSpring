@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JdbcLinkServiceTest {
+public class DbLinkServiceTest {
 
     public static final long TG_CHAT_ID = 12345L;
     public static final URI URL = URI.create("https://example.com");
@@ -30,14 +30,14 @@ public class JdbcLinkServiceTest {
     @Mock
     private JdbcUserLinkRepository jdbcUserLinkRepository;
     @InjectMocks
-    private JdbcLinkService jdbcLinkService;
+    private DbLinkService linkService;
 
     @Test
     void getAllLinks_ReturnsListOfLinks() {
 
         when(jdbcUserLinkRepository.getAllLinksByUserId(TG_CHAT_ID)).thenReturn(List.of(LINK));
 
-        List<LinkResponse> responseEntity = jdbcLinkService.getAllLinks(TG_CHAT_ID).links();
+        List<LinkResponse> responseEntity = linkService.getAllLinks(TG_CHAT_ID).links();
 
         assertEquals(1, responseEntity.size());
         assertEquals(LINK.getLink(), responseEntity.get(0).url().toString());
@@ -50,7 +50,7 @@ public class JdbcLinkServiceTest {
 
         when(jdbcLinkRepository.add(TG_CHAT_ID, addLinkRequest.link())).thenReturn(LINK_RESPONSE);
 
-        LinkResponse body = jdbcLinkService.addLink(TG_CHAT_ID, addLinkRequest);
+        LinkResponse body = linkService.addLink(TG_CHAT_ID, addLinkRequest);
 
         assertEquals(TG_CHAT_ID, body.id());
         assertEquals(URL, body.url());
@@ -63,7 +63,7 @@ public class JdbcLinkServiceTest {
 
         when(jdbcLinkRepository.delete(TG_CHAT_ID, URL)).thenReturn(LINK_RESPONSE);
 
-        LinkResponse responseEntity = jdbcLinkService.deleteLink(TG_CHAT_ID, removeLinkRequest);
+        LinkResponse responseEntity = linkService.deleteLink(TG_CHAT_ID, removeLinkRequest);
 
         assertEquals(TG_CHAT_ID, responseEntity.id());
         assertEquals(URL, responseEntity.url());

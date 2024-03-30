@@ -26,12 +26,12 @@ public class LinkUpdateScheduler {
     public void update() {
         List<Long> users;
         List<Link> links =
-            params.getJdbcLinkRepository()
+            params.getLinkRepository()
                 .findLinksUpdatedMoreThanNMinutesAgo(params.getScheduler().interval().toMinutes())
                 .stream().toList();
 
         for (Link link : links) {
-            users = params.getJdbcUserLinkRepository().getAllUsersByLink(link).stream().toList();
+            users = params.getUserLinkRepository().getAllUsersByLink(link).stream().toList();
             URI url = URI.create(link.getLink());
             if (GITHUB_HOST.equals(url.getHost())) {
                 List<String> description =

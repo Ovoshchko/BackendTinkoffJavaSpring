@@ -5,44 +5,36 @@ import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.dto.response.ListLinksResponse;
 import edu.java.scrapper.exception.NotFoundException;
-import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
+import lombok.Data;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.jooq.exception.IntegrityConstraintViolationException;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class JooqLinkService implements LinkService {
+@Data
+public class DbLinkService implements LinkService {
+    private final LinkRepository linkRepository;
+    private final UserLinkRepository userLinkRepository;
 
-    private final LinkRepository jooqLinkRepository;
-    private final UserLinkRepository jooqUserLinkRepository;
-
-    @Override
     public ListLinksResponse getAllLinks(Long tgChatId) {
-        List<LinkResponse> links = jooqUserLinkRepository.getAllLinksByUserId(tgChatId)
+        List<LinkResponse> linkResponses = userLinkRepository.getAllLinksByUserId(tgChatId)
             .stream()
             .map(link -> new LinkResponse(tgChatId, URI.create(link.getLink())))
             .toList();
-        return new ListLinksResponse(links, links.size());
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
-    @Override
     public LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         try {
-            return jooqLinkRepository.add(tgChatId, addLinkRequest.link());
-        } catch (IntegrityConstraintViolationException exception) {
+            return linkRepository.add(tgChatId, addLinkRequest.link());
+        } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
     }
 
-    @Override
     public LinkResponse deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
-        return jooqLinkRepository.delete(tgChatId, removeLinkRequest.link());
+        return linkRepository.delete(tgChatId, removeLinkRequest.link());
     }
 }
