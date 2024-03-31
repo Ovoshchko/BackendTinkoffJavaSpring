@@ -4,7 +4,7 @@ import edu.java.scrapper.dto.request.AddLinkRequest;
 import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.dto.response.ListLinksResponse;
-import edu.java.scrapper.service.link.JdbcLinkService;
+import edu.java.scrapper.service.link.DbLinkService;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class LinkControllerTest {
     public static final URI URL = URI.create("https://ok.com");
     public static final long TG_CHAT_ID = 12345L;
     @Mock
-    JdbcLinkService jdbcLinkService;
+    DbLinkService linkService;
 
     @InjectMocks
     LinkController linkController;
@@ -33,7 +33,7 @@ public class LinkControllerTest {
         List<LinkResponse> linkResponses = List.of(new LinkResponse(TG_CHAT_ID, URL));
         ListLinksResponse expectedResponse = new ListLinksResponse(linkResponses, linkResponses.size());
 
-        when(jdbcLinkService.getAllLinks(TG_CHAT_ID)).thenReturn(expectedResponse);
+        when(linkService.getAllLinks(TG_CHAT_ID)).thenReturn(expectedResponse);
 
         ResponseEntity responseEntity = linkController.getAllLinks(TG_CHAT_ID);
 
@@ -47,7 +47,7 @@ public class LinkControllerTest {
         AddLinkRequest addLinkRequest = new AddLinkRequest(URL);
         LinkResponse expectedResponse = new LinkResponse(TG_CHAT_ID, URL);
 
-        when(jdbcLinkService.addLink(TG_CHAT_ID, addLinkRequest)).thenReturn(expectedResponse);
+        when(linkService.addLink(TG_CHAT_ID, addLinkRequest)).thenReturn(expectedResponse);
 
         ResponseEntity<LinkResponse> responseEntity = linkController.addLink(TG_CHAT_ID, addLinkRequest);
 
@@ -61,7 +61,7 @@ public class LinkControllerTest {
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URL);
         LinkResponse expectedResponse = new LinkResponse(TG_CHAT_ID, URL);
 
-        when(jdbcLinkService.deleteLink(TG_CHAT_ID, removeLinkRequest)).thenReturn(expectedResponse);
+        when(linkService.deleteLink(TG_CHAT_ID, removeLinkRequest)).thenReturn(expectedResponse);
 
         ResponseEntity<LinkResponse> responseEntity = linkController.deleteLink(TG_CHAT_ID, removeLinkRequest);
 

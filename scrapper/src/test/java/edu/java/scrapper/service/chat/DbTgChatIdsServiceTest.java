@@ -11,20 +11,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JdbcTgChatIdsServiceTest {
+public class DbTgChatIdsServiceTest {
 
     public static final long TG_CHAT_ID = 12345L;
     @Mock
     private JdbcUserRepository jdbcUserRepository;
     @InjectMocks
-    private JdbcTgChatIdsService jdbcTgChatIdsService;
+    private DbTgChatIdsService dbTgChatIdsService;
 
     @Test
     void registerUserChat_ReturnsOkResponse() {
 
         when(jdbcUserRepository.add(TG_CHAT_ID)).thenReturn(1);
 
-        jdbcTgChatIdsService.registerUserChat(TG_CHAT_ID);
+        dbTgChatIdsService.registerUserChat(TG_CHAT_ID);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class JdbcTgChatIdsServiceTest {
 
         when(jdbcUserRepository.remove(TG_CHAT_ID)).thenReturn(1);
 
-        jdbcTgChatIdsService.deleteUserChat(TG_CHAT_ID);
+        dbTgChatIdsService.deleteUserChat(TG_CHAT_ID);
     }
 
     @Test
@@ -40,7 +40,7 @@ public class JdbcTgChatIdsServiceTest {
 
         when(jdbcUserRepository.add(TG_CHAT_ID)).thenThrow(AlreadyExistsException.class);
 
-        assertThrows(AlreadyExistsException.class, () -> jdbcTgChatIdsService.registerUserChat(TG_CHAT_ID));
+        assertThrows(AlreadyExistsException.class, () -> dbTgChatIdsService.registerUserChat(TG_CHAT_ID));
     }
 
 }

@@ -4,6 +4,7 @@
 package edu.java.scrapper.domain.jooq.linkviewer.tables;
 
 
+import edu.java.scrapper.domain.jooq.linkviewer.Keys;
 import edu.java.scrapper.domain.jooq.linkviewer.Linkviewer;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.records.GitcommitsRecord;
 
@@ -26,6 +27,7 @@ import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
@@ -73,7 +75,7 @@ public class Gitcommits extends TableImpl<GitcommitsRecord> {
     /**
      * The column <code>LINKVIEWER.GITCOMMITS.URL</code>.
      */
-    public final TableField<GitcommitsRecord, String> URL = createField(DSL.name("URL"), SQLDataType.VARCHAR(1000000000), this, "");
+    public final TableField<GitcommitsRecord, String> URL = createField(DSL.name("URL"), SQLDataType.VARCHAR(1000000000).nullable(false), this, "");
 
     /**
      * The column <code>LINKVIEWER.GITCOMMITS.COMMENT_NUMBER</code>.
@@ -117,6 +119,12 @@ public class Gitcommits extends TableImpl<GitcommitsRecord> {
     @Nullable
     public Schema getSchema() {
         return aliased() ? null : Linkviewer.LINKVIEWER;
+    }
+
+    @Override
+    @NotNull
+    public UniqueKey<GitcommitsRecord> getPrimaryKey() {
+        return Keys.CONSTRAINT_8;
     }
 
     @Override

@@ -4,23 +4,19 @@ import edu.java.scrapper.clients.stackoverflow.StackoverflowClient;
 import edu.java.scrapper.dto.stackoverflow.Answer;
 import edu.java.scrapper.dto.stackoverflow.ListAnswer;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
+import edu.java.scrapper.model.StackoverflowAnswer;
 import edu.java.scrapper.repository.StackoverflowAnswerRepository;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-@Service
-@RequiredArgsConstructor
+@Data
 public class WebStackoverflowService implements StackoverflowService {
 
-    public static final String UNKNOWN_UPDATE = "Пришло обновление, но я не знаю какое(";
-    public static final String NOT_ANSWERS_UPDATE = "Что-то произошло. Но это было не в ответах";
-    public static final String BAD_LINK = "Плохая ссылка";
     private final StackoverflowClient stackoverflowWebClient;
-    private final StackoverflowAnswerRepository jdbcStackoverflowAnswerRepository;
+    private final StackoverflowAnswerRepository stackoverflowAnswerRepository;
 
     @Override
     public List<String> checkForUpdates(URI url, LocalDateTime time) {
@@ -36,7 +32,7 @@ public class WebStackoverflowService implements StackoverflowService {
                 ListAnswer answer = stackoverflowWebClient.checkForAnswers(questionId);
 
                 if ((answer.answers() != null) && (!answer.answers().isEmpty())) {
-                    description = processAnswers(answer.answers(), questionId);
+                    description = processAnswers(getStackOverflowAnswerFromDto(answer.answers()), questionId);
                 }
 
                 if (description.isEmpty()) {
@@ -50,19 +46,27 @@ public class WebStackoverflowService implements StackoverflowService {
         return description;
     }
 
-    private List<String> processAnswers(List<Answer> answers, long questionId) {
+    private List<String> processAnswers(List<StackoverflowAnswer> answers, long questionId) {
         List<String> stringAnswers = new ArrayList<>();
-        List<Answer> existingAnswers = jdbcStackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
+        List<StackoverflowAnswer> existingAnswers = stackoverflowAnswerRepository.getAnswerByQuestionId(questionId);
         if (existingAnswers.size() < answers.size()) {
-            for (Answer answer : answers) {
+            for (StackoverflowAnswer answer : answers) {
                 if (!existingAnswers.contains(answer)) {
-                    jdbcStackoverflowAnswerRepository.addAnswer(answer);
-                    stringAnswers.add("Появился новый ответ от пользователя " + answer.owner().displayName()
+                    stackoverflowAnswerRepository.addAnswer(answer);
+                    stringAnswers.add("Появился новый ответ от пользователя " + answer.getName()
                         + System.lineSeparator());
                 }
             }
         }
         return stringAnswers;
+    }
+
+    private List<StackoverflowAnswer> getStackOverflowAnswerFromDto(List<Answer> answers) {
+        return answers.stream()
+            .map(answer -> new StackoverflowAnswer().setAnswerId(answer.answerId())
+                .setName(answer.owner().displayName())
+                .setQuestionId(answer.questionId()))
+            .toList();
     }
 
     private long getQuestionId(URI url) {

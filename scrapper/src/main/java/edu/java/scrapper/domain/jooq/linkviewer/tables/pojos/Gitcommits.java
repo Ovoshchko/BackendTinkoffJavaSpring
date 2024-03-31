@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 
 import javax.annotation.processing.Generated;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -48,7 +49,7 @@ public class Gitcommits implements Serializable {
     public Gitcommits(
         @Nullable String name,
         @Nullable LocalDateTime madeDate,
-        @Nullable String url,
+        @NotNull String url,
         @Nullable Long commentNumber
     ) {
         this.name = name;
@@ -91,8 +92,9 @@ public class Gitcommits implements Serializable {
     /**
      * Getter for <code>LINKVIEWER.GITCOMMITS.URL</code>.
      */
+    @jakarta.validation.constraints.NotNull
     @Size(max = 1000000000)
-    @Nullable
+    @NotNull
     public String getUrl() {
         return this.url;
     }
@@ -100,7 +102,7 @@ public class Gitcommits implements Serializable {
     /**
      * Setter for <code>LINKVIEWER.GITCOMMITS.URL</code>.
      */
-    public void setUrl(@Nullable String url) {
+    public void setUrl(@NotNull String url) {
         this.url = url;
     }
 

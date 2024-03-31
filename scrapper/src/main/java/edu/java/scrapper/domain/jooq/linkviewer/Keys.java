@@ -4,10 +4,14 @@
 package edu.java.scrapper.domain.jooq.linkviewer;
 
 
+import edu.java.scrapper.domain.jooq.linkviewer.tables.Gitcommits;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Links;
+import edu.java.scrapper.domain.jooq.linkviewer.tables.Stackoverflowanswers;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Userlink;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.Users;
+import edu.java.scrapper.domain.jooq.linkviewer.tables.records.GitcommitsRecord;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.records.LinksRecord;
+import edu.java.scrapper.domain.jooq.linkviewer.tables.records.StackoverflowanswersRecord;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.records.UserlinkRecord;
 import edu.java.scrapper.domain.jooq.linkviewer.tables.records.UsersRecord;
 
@@ -38,8 +42,10 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<GitcommitsRecord> CONSTRAINT_8 = Internal.createUniqueKey(Gitcommits.GITCOMMITS, DSL.name("CONSTRAINT_8"), new TableField[] { Gitcommits.GITCOMMITS.URL }, true);
     public static final UniqueKey<LinksRecord> CONSTRAINT_45 = Internal.createUniqueKey(Links.LINKS, DSL.name("CONSTRAINT_45"), new TableField[] { Links.LINKS.ID }, true);
     public static final UniqueKey<LinksRecord> CONSTRAINT_451 = Internal.createUniqueKey(Links.LINKS, DSL.name("CONSTRAINT_451"), new TableField[] { Links.LINKS.URL }, true);
+    public static final UniqueKey<StackoverflowanswersRecord> CONSTRAINT_4F = Internal.createUniqueKey(Stackoverflowanswers.STACKOVERFLOWANSWERS, DSL.name("CONSTRAINT_4F"), new TableField[] { Stackoverflowanswers.STACKOVERFLOWANSWERS.ANSWER_ID }, true);
     public static final UniqueKey<UsersRecord> CONSTRAINT_4 = Internal.createUniqueKey(Users.USERS, DSL.name("CONSTRAINT_4"), new TableField[] { Users.USERS.TG_ID }, true);
 
     // -------------------------------------------------------------------------

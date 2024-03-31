@@ -10,7 +10,7 @@ import org.jooq.meta.jaxb.Property;
 import org.jooq.meta.jaxb.Target;
 
 @UtilityClass
-@SuppressWarnings("UncommentedMain") //Здесь лучше вынести в отдельную функцию или как-то по-другому это делается?
+@SuppressWarnings("UncommentedMain")
 public class JooqCodegen {
 
     public static void main(String[] args) throws Exception {

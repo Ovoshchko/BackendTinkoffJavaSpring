@@ -9,19 +9,16 @@ import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
 import java.net.URI;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 
-@Service
-@AllArgsConstructor
-public class JdbcLinkService implements LinkService {
-
-    private final LinkRepository jdbcLinkRepository;
-    private final UserLinkRepository jdbcUserLinkRepository;
+@Data
+public class DbLinkService implements LinkService {
+    private final LinkRepository linkRepository;
+    private final UserLinkRepository userLinkRepository;
 
     public ListLinksResponse getAllLinks(Long tgChatId) {
-        List<LinkResponse> linkResponses = jdbcUserLinkRepository.getAllLinksByUserId(tgChatId)
+        List<LinkResponse> linkResponses = userLinkRepository.getAllLinksByUserId(tgChatId)
             .stream()
             .map(link -> new LinkResponse(tgChatId, URI.create(link.getLink())))
             .toList();
@@ -30,13 +27,13 @@ public class JdbcLinkService implements LinkService {
 
     public LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         try {
-            return jdbcLinkRepository.add(tgChatId, addLinkRequest.link());
+            return linkRepository.add(tgChatId, addLinkRequest.link());
         } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
     }
 
     public LinkResponse deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
-        return jdbcLinkRepository.delete(tgChatId, removeLinkRequest.link());
+        return linkRepository.delete(tgChatId, removeLinkRequest.link());
     }
 }

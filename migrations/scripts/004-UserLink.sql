@@ -1,7 +1,7 @@
 --liquibase formatted sql
---changeset id:UserLink author:Ovoshchko
+--changeset id:UserLink author:Ovoshchko runOnChange:true
 
-CREATE TABLE linkviewer.userlink(
+CREATE TABLE IF NOT EXISTS linkviewer.userlink(
     user_id bigint,
     link_id bigint,
 

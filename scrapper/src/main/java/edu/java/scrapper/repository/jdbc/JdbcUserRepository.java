@@ -6,6 +6,7 @@ import edu.java.scrapper.repository.query.UserQuery;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,10 +27,9 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> findAll() {
         return jdbcTemplate.query(userQuery.getSelectAllUsers(), (ResultSet resultSet, int rowNum) ->
-            new User(
-                resultSet.getLong(TG_ID_NAME),
-                resultSet.getDate(CREATED_AT_NAME).toLocalDate()
-            )
+            new User()
+                .setTgId(resultSet.getLong(TG_ID_NAME))
+                .setCreatedAt(resultSet.getTimestamp(CREATED_AT_NAME).toLocalDateTime())
         );
     }
 
@@ -42,6 +42,8 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     @Transactional
     public Integer add(long id) {
-        return jdbcTemplate.update(userQuery.getInsertUser(), id, Timestamp.valueOf(LocalDateTime.now()));
+        return jdbcTemplate.update(userQuery.getInsertUser(), id,
+            Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+        );
     }
 }

@@ -1,9 +1,10 @@
 package edu.java.scrapper.repository;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.dto.stackoverflow.Answer;
+import edu.java.scrapper.model.StackoverflowAnswer;
 import java.sql.ResultSet;
 import java.util.List;
+import edu.java.scrapper.repository.StackoverflowAnswerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,8 @@ class StackoverflowAnswerRepositoryTest extends IntegrationTest {
     private final static String NAME = "name";
     private final static long QUESTION_ID = 123;
     private final static long ANSWER_ID = 12;
-    private final static Answer ANSWER = new Answer(new Answer.Owner(NAME), ANSWER_ID, QUESTION_ID);
+    private final static StackoverflowAnswer ANSWER = new StackoverflowAnswer().setName(NAME).setAnswerId(ANSWER_ID)
+        .setQuestionId(QUESTION_ID);
     @Autowired
     private List<StackoverflowAnswerRepository> stackoverflowAnswerRepositories;
     @Autowired
@@ -32,13 +34,12 @@ class StackoverflowAnswerRepositoryTest extends IntegrationTest {
 
             repository.addAnswer(ANSWER);
 
-            List<Answer> answers = jdbcTemplate.query(
+            List<StackoverflowAnswer> answers = jdbcTemplate.query(
                 "select * from stackoverflowanswers;",
-                (ResultSet resultSet, int rowNum) -> new Answer(
-                    new Answer.Owner(resultSet.getString("name")),
-                    resultSet.getLong("answer_id"),
-                    resultSet.getLong("question_id")
-                )
+                (ResultSet resultSet, int rowNum) -> new StackoverflowAnswer()
+                    .setName(resultSet.getString("name"))
+                    .setAnswerId(resultSet.getLong("answer_id"))
+                    .setQuestionId(resultSet.getLong("question_id"))
             );
 
             assertEquals(1, answers.size());
@@ -57,7 +58,7 @@ class StackoverflowAnswerRepositoryTest extends IntegrationTest {
         );
 
         for (StackoverflowAnswerRepository repository : stackoverflowAnswerRepositories) {
-            List<Answer> answers = repository.getAnswerByQuestionId(QUESTION_ID);
+            List<StackoverflowAnswer> answers = repository.getAnswerByQuestionId(QUESTION_ID);
 
             assertEquals(1, answers.size());
             assertThat(answers.get(0)).isEqualTo(ANSWER);

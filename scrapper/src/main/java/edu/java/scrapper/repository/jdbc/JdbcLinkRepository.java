@@ -9,6 +9,7 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +43,10 @@ public class JdbcLinkRepository implements LinkRepository {
             jdbcTemplate.update(con -> {
                 PreparedStatement statement = con.prepareStatement(linksQuery.getInsertLink(), new String[] {ID_NAME});
                 statement.setString(1, link.toString());
-                statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+                statement.setTimestamp(
+                    2,
+                    Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+                );
                 return statement;
             }, keyHolder);
             linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();

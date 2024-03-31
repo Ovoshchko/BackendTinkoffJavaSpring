@@ -1,6 +1,7 @@
 package edu.java.scrapper.repository.jdbc;
 
 import edu.java.scrapper.dto.stackoverflow.Answer;
+import edu.java.scrapper.model.StackoverflowAnswer;
 import edu.java.scrapper.repository.StackoverflowAnswerRepository;
 import edu.java.scrapper.repository.query.StackoverflowAnswerQuery;
 import java.sql.PreparedStatement;
@@ -18,32 +19,31 @@ public class JdbcStackoverflowAnswerRepository implements StackoverflowAnswerRep
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Integer addAnswer(Answer answer) {
-        List<Answer> existingAnswer = getAnswerByAnswerAndQuestionId(answer.answerId(), answer.questionId());
+    public Integer addAnswer(StackoverflowAnswer answer) {
+        List<Answer> existingAnswer = getAnswerByAnswerAndQuestionId(answer.getAnswerId(), answer.getQuestionId());
         if ((existingAnswer != null) && (!existingAnswer.isEmpty())) {
             return 1;
         }
         return jdbcTemplate.update(
             stackoverflowAnswerQuery.getAddAnswer(),
-            answer.owner().displayName(),
-            answer.answerId(),
-            answer.questionId()
+            answer.getName(),
+            answer.getAnswerId(),
+            answer.getQuestionId()
         );
     }
 
     @Override
-    public List<Answer> getAnswerByQuestionId(long questionId) {
+    public List<StackoverflowAnswer> getAnswerByQuestionId(long questionId) {
         return jdbcTemplate.query(
             con -> {
                 PreparedStatement statement = con.prepareStatement(stackoverflowAnswerQuery.getGetAnswerByQuestionId());
                 statement.setLong(1, questionId);
                 return statement;
             },
-            (ResultSet resultSet, int rowNum) -> new Answer(
-                new Answer.Owner(resultSet.getString(NAME_NAME)),
-                resultSet.getLong(ANSWER_ID_NAME),
-                resultSet.getLong(QUESTION_ID_NAME)
-            )
+            (ResultSet resultSet, int rowNum) -> new StackoverflowAnswer()
+                .setAnswerId(resultSet.getLong(ANSWER_ID_NAME))
+                .setQuestionId(resultSet.getLong(QUESTION_ID_NAME))
+                .setName(resultSet.getString(NAME_NAME))
         );
     }
 

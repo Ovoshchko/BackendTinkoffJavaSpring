@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class LinkRepositoryTest extends IntegrationTest {
@@ -24,9 +25,13 @@ class LinkRepositoryTest extends IntegrationTest {
     public static final String USER_ID_NAME = "user_id";
     private static final long USER_ID = 12345L;
     private static final URI LINK_URI = URI.create("https://example.com");
+    private static final URI LINK_URI_2 = URI.create("https://notexample.com");
     private static final String ID_NAME = "id";
     private static final String URL_NAME = "url";
     private static final String LAST_CHECK_NAME = "last_check";
+    private static final long MINUTES = 30;
+    private static final long DAYS = 5;
+
     @Autowired
     private List<LinkRepository> linkRepositories;
     @Autowired
@@ -48,6 +53,7 @@ class LinkRepositoryTest extends IntegrationTest {
         jdbcTemplate.update("DELETE FROM links;");
         jdbcTemplate.update("DELETE FROM users;");
     }
+
     @Test
     @Transactional
     @Rollback
@@ -94,7 +100,7 @@ class LinkRepositoryTest extends IntegrationTest {
 
             Long linkId = jdbcTemplate.queryForObject(
                 "SELECT id FROM links WHERE url = ?",
-                new Object[]{LINK_URI.toString()},
+                new Object[] {LINK_URI.toString()},
                 Long.class
             );
 
@@ -148,6 +154,40 @@ class LinkRepositoryTest extends IntegrationTest {
 
             assertEquals(LINK_URI.toString(), response.get(0).getLink());
             assertEquals(1, response.size());
+        }
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void findLinksUpdatedMoreThanNMinutesAgo() {
+
+        LocalDateTime olderThanNMinutes = LocalDateTime.now().plusDays(DAYS);
+        LocalDateTime withinNMinutes = LocalDateTime.now().minusDays(DAYS);
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement =
+                con.prepareStatement("INSERT INTO links (url, last_check) VALUES (?, ?);");
+            statement.setString(1, LINK_URI.toString());
+            statement.setTimestamp(2, Timestamp.valueOf(olderThanNMinutes));
+            return statement;
+        });
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement =
+                con.prepareStatement("INSERT INTO links (url, last_check) VALUES (?, ?);");
+            statement.setString(1, LINK_URI_2.toString());
+            statement.setTimestamp(2, Timestamp.valueOf(withinNMinutes));
+            return statement;
+        });
+
+        for (LinkRepository linkRepository : linkRepositories) {
+
+            List<Link> response = linkRepository.findLinksUpdatedMoreThanNMinutesAgo(MINUTES).stream().toList();
+
+            assertEquals(1, response.size());
+            assertTrue(response.get(0).getLastCheck().isBefore(LocalDateTime.now().minusMinutes(MINUTES)));
+            assertEquals(LINK_URI_2.toString(), response.get(0).getLink());
         }
     }
 }
