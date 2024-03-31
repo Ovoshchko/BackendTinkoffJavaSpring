@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -21,8 +22,8 @@ public class ScrapperWebClient implements ScrapperClient {
     private final static String CHATS_WEB_PARAM = "Tg-Chat-Id";
     private final WebClient webClient;
 
-    public ScrapperWebClient(String baseUrl) {
-        webClient = WebClient.builder().baseUrl(baseUrl).build();
+    public ScrapperWebClient(String baseUrl, ExchangeFilterFunction exchangeFilterFunction) {
+        webClient = WebClient.builder().baseUrl(baseUrl).filter(exchangeFilterFunction).build();
     }
 
     @Override
