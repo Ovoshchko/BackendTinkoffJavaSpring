@@ -2,8 +2,11 @@ package edu.java.scrapper.clients.github;
 
 import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.dto.github.GithubResponse;
+import edu.java.scrapper.exception.ServerUnavaliableError;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 public class GithubWebClient implements GithubClient {
 
@@ -11,8 +14,8 @@ public class GithubWebClient implements GithubClient {
     private final static String COMMITS_ENDPOINT = REPO_ENDPOINT + "/commits";
     private final WebClient webClient;
 
-    public GithubWebClient(String baseUrl) {
-        webClient = WebClient.builder().baseUrl(baseUrl).build();
+    public GithubWebClient(String baseUrl, ExchangeFilterFunction retryFilterFunction) {
+        webClient = WebClient.builder().baseUrl(baseUrl).filter(retryFilterFunction).build();
     }
 
     @Override

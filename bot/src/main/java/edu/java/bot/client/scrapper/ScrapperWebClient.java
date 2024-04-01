@@ -7,6 +7,7 @@ import edu.java.bot.dto.response.LinkResponse;
 import edu.java.bot.dto.response.ListLinksResponse;
 import java.util.List;
 import java.util.Objects;
+import edu.java.bot.exception.ServerUnavaliableError;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -35,6 +36,8 @@ public class ScrapperWebClient implements ScrapperClient {
             .bodyToMono(String.class)
             .onErrorResume(WebClientResponseException.class, e ->
                 Mono.just(Objects.requireNonNull(e.getResponseBodyAs(ApiErrorResponse.class)).description()))
+            .onErrorResume(ServerUnavaliableError.class, e ->
+                Mono.just(e.getMessage()))
             .block();
     }
 
@@ -47,6 +50,8 @@ public class ScrapperWebClient implements ScrapperClient {
             .bodyToMono(String.class)
             .onErrorResume(WebClientResponseException.class, e ->
                 Mono.just(Objects.requireNonNull(e.getResponseBodyAs(ApiErrorResponse.class)).description()))
+            .onErrorResume(ServerUnavaliableError.class, e ->
+                Mono.just(e.getMessage()))
             .block();
     }
 

@@ -7,9 +7,9 @@ api:
 
 client:
   retry:
-    initial-interval: 5s
+    initial-interval: 1s
     max-attempts: 5
-    max-interval: 10s
+    max-interval: 2s
     multiplier: 2
     codes: 500, 501, 502, 503 ,504
   backoff: linear

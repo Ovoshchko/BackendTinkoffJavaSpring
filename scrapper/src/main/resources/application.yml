@@ -13,6 +13,15 @@ api:
   stackoverflow:
     base-url: https://api.stackexchange.com/2.3/
 
+client:
+  retry:
+    initial-interval: 1s
+    max-attempts: 5
+    max-interval: 2s
+    multiplier: 2
+    codes: 500, 501, 502, 503 ,504
+  backoff: linear
+
 springdoc:
   default-produces-media-type: application/json
   swagger-ui:

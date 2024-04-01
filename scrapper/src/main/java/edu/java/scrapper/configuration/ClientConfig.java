@@ -6,6 +6,7 @@ import edu.java.scrapper.clients.stackoverflow.StackoverflowWebClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 
 @Configuration
 public class ClientConfig {
@@ -17,17 +18,17 @@ public class ClientConfig {
     private String botBasePath;
 
     @Bean
-    public GithubWebClient githubWebClient() {
-        return new GithubWebClient(gitBasePath);
+    public GithubWebClient githubWebClient(ExchangeFilterFunction retryFilterFunction) {
+        return new GithubWebClient(gitBasePath, retryFilterFunction);
     }
 
     @Bean
-    public StackoverflowWebClient stackoverflowWebClient() {
-        return new StackoverflowWebClient(stackoverflowBasePath);
+    public StackoverflowWebClient stackoverflowWebClient(ExchangeFilterFunction retryFilterFunction) {
+        return new StackoverflowWebClient(stackoverflowBasePath, retryFilterFunction);
     }
 
     @Bean
-    public BotWebClient botWebClient() {
-        return new BotWebClient(botBasePath);
+    public BotWebClient botWebClient(ExchangeFilterFunction retryFilterFunction) {
+        return new BotWebClient(botBasePath, retryFilterFunction);
     }
 }

@@ -31,7 +31,7 @@ public class JpaLinkRepository implements LinkRepository {
 
         if (existingLink == null) {
             existingLink = linkDao.saveAndFlush(new Link().setLink(link.toString())
-                .setLastCheck(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime()));
+                .setLastCheck(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
         }
 
         userLinkDao.saveAndFlush(
@@ -60,6 +60,7 @@ public class JpaLinkRepository implements LinkRepository {
 
     @Override
     public Collection<Link> findLinksUpdatedMoreThanNMinutesAgo(long minutes) {
-        return linkDao.findByLastCheckBefore(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime());
+        return linkDao.findByLastCheckBefore(OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(minutes)
+            .toLocalDateTime());
     }
 }

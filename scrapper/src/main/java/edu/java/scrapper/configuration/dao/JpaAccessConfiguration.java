@@ -1,7 +1,9 @@
-package edu.java.scrapper.configuration;
+package edu.java.scrapper.configuration.dao;
 
 import edu.java.scrapper.clients.github.GithubClient;
 import edu.java.scrapper.clients.stackoverflow.StackoverflowClient;
+import edu.java.scrapper.configuration.ApplicationConfig;
+import edu.java.scrapper.configuration.SchedulerParams;
 import edu.java.scrapper.repository.jpa.JpaGitCommitRepository;
 import edu.java.scrapper.repository.jpa.JpaLinkRepository;
 import edu.java.scrapper.repository.jpa.JpaStackoverflowAnswerRepository;

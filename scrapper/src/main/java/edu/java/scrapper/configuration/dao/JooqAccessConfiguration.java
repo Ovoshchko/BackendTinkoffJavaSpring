@@ -1,12 +1,14 @@
-package edu.java.scrapper.configuration;
+package edu.java.scrapper.configuration.dao;
 
 import edu.java.scrapper.clients.github.GithubClient;
 import edu.java.scrapper.clients.stackoverflow.StackoverflowClient;
-import edu.java.scrapper.repository.jdbc.JdbcGitCommitRepository;
-import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.repository.jdbc.JdbcStackoverflowAnswerRepository;
-import edu.java.scrapper.repository.jdbc.JdbcUserLinkRepository;
-import edu.java.scrapper.repository.jdbc.JdbcUserRepository;
+import edu.java.scrapper.configuration.ApplicationConfig;
+import edu.java.scrapper.configuration.SchedulerParams;
+import edu.java.scrapper.repository.jooq.JooqGitCommitRepository;
+import edu.java.scrapper.repository.jooq.JooqLinkRepository;
+import edu.java.scrapper.repository.jooq.JooqStackoverflowAnswerRepository;
+import edu.java.scrapper.repository.jooq.JooqUserLinkRepository;
+import edu.java.scrapper.repository.jooq.JooqUserRepository;
 import edu.java.scrapper.service.bot.BotService;
 import edu.java.scrapper.service.chat.DbTgChatIdsService;
 import edu.java.scrapper.service.chat.TgChatIdsService;
@@ -22,57 +24,55 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jdbc")
-public class JdbcAccessConfiguration {
-
+@ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jooq")
+public class JooqAccessConfiguration {
     @Bean
     @Autowired
-    public TgChatIdsService tgChatIdsService(JdbcUserRepository jdbcUserRepository) {
-        return new DbTgChatIdsService(jdbcUserRepository);
+    public TgChatIdsService tgChatIdsService(JooqUserRepository jooqUserRepository) {
+        return new DbTgChatIdsService(jooqUserRepository);
     }
 
     @Bean
     @Autowired
-    public GitService gitService(GithubClient githubClient, JdbcGitCommitRepository jdbcGitCommitRepository) {
-        return new WebGitService(githubClient, jdbcGitCommitRepository);
+    public GitService gitService(GithubClient githubClient, JooqGitCommitRepository jooqGitCommitRepository) {
+        return new WebGitService(githubClient, jooqGitCommitRepository);
     }
 
     @Bean
     @Autowired
     public LinkService linkService(
-        JdbcLinkRepository jdbcLinkRepository,
-        JdbcUserLinkRepository jdbcUserLinkRepository
+        JooqLinkRepository jooqLinkRepository,
+        JooqUserLinkRepository jooqUserLinkRepository
     ) {
-        return new DbLinkService(jdbcLinkRepository, jdbcUserLinkRepository);
+        return new DbLinkService(jooqLinkRepository, jooqUserLinkRepository);
     }
 
     @Bean
     @Autowired
     public StackoverflowService stackoverflowService(
         StackoverflowClient stackoverflowClient,
-        JdbcStackoverflowAnswerRepository jdbcStackoverflowAnswerRepository
+        JooqStackoverflowAnswerRepository jooqStackoverflowAnswerRepository
     ) {
-        return new WebStackoverflowService(stackoverflowClient, jdbcStackoverflowAnswerRepository);
+        return new WebStackoverflowService(stackoverflowClient, jooqStackoverflowAnswerRepository);
     }
 
     @Bean
     @Autowired
     public SchedulerParams schedulerParams(
-        JdbcUserLinkRepository jdbcUserLinkRepository,
-        JdbcLinkRepository jdbcLinkRepository,
+        JooqUserLinkRepository jooqUserLinkRepository,
+        JooqLinkRepository jooqLinkRepository,
         ApplicationConfig.Scheduler scheduler,
         BotService botService,
         GithubClient githubClient,
         StackoverflowClient stackoverflowClient
     ) {
         return new SchedulerParams(
-            jdbcUserLinkRepository,
-            jdbcLinkRepository,
+            jooqUserLinkRepository,
+            jooqLinkRepository,
             scheduler,
             botService,
             githubClient,
             stackoverflowClient
         );
     }
-
 }

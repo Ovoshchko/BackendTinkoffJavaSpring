@@ -1,4 +1,4 @@
-package edu.java.bot.configuration.retry.RetryParams;
+package edu.java.bot.configuration.retry.retryparams;
 
 import edu.java.bot.configuration.retry.backoff.RetryBackoff;
 import org.springframework.http.HttpStatusCode;

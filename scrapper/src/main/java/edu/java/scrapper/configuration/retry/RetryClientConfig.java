@@ -1,11 +1,11 @@
-package edu.java.bot.configuration.retry;
+package edu.java.scrapper.configuration.retry;
 
-import edu.java.bot.configuration.retry.retryparams.RetryParams;
-import edu.java.bot.configuration.retry.backoff.ConstantRetryBackoff;
-import edu.java.bot.configuration.retry.backoff.ExponentialRetryBackoff;
-import edu.java.bot.configuration.retry.backoff.LinearRetryBackoff;
-import edu.java.bot.configuration.retry.backoff.RetryBackoff;
-import edu.java.bot.exception.ServerUnavaliableError;
+import edu.java.scrapper.configuration.retry.backoff.ConstantRetryBackoff;
+import edu.java.scrapper.configuration.retry.backoff.ExponentialRetryBackoff;
+import edu.java.scrapper.configuration.retry.backoff.LinearRetryBackoff;
+import edu.java.scrapper.configuration.retry.backoff.RetryBackoff;
+import edu.java.scrapper.configuration.retry.retryparams.RetryParams;
+import edu.java.scrapper.exception.ServerUnavaliableError;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -64,7 +64,7 @@ public class RetryClientConfig {
         return new ConstantRetryBackoff(retryConfig.getInitialInterval());
     }
 
-    private class RetryExchangeFilterFunction implements ExchangeFilterFunction {
+    public static class RetryExchangeFilterFunction implements ExchangeFilterFunction {
 
         private final int maxAttempts;
         private final RetryParams retryParams;

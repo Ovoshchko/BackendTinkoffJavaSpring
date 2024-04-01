@@ -21,9 +21,8 @@ public class TgChatIdsController {
     @PostMapping
     @Operation(summary = "Добавление чата в список")
     public ResponseEntity registerUserChat(@PathVariable Long id) {
-        throw new RuntimeException(" ");
-        //dbTgChatIdsService.registerUserChat(id);
-        //return ResponseEntity.status(HttpStatus.OK).body("Пользователь успешно добавлен.");
+        dbTgChatIdsService.registerUserChat(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Пользователь успешно добавлен.");
     }
 
     @DeleteMapping
