@@ -2,11 +2,16 @@ package edu.java.scrapper.controller;
 
 import com.giffing.bucket4j.spring.boot.starter.filter.servlet.ServletRequestFilter;
 import edu.java.scrapper.service.chat.TgChatIdsService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -50,5 +55,10 @@ public class BucketLimitControllerTest {
 
         mockMvc.perform(post(TG_CHAT_URL + USER_ID))
             .andExpect(status().isTooManyRequests());
+    }
+
+    @AfterEach
+    void end() {
+        cacheManager.getCache("rate-limit-buckets").clear();
     }
 }

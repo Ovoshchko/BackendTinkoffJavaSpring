@@ -64,13 +64,11 @@ bucket4j:
   enabled: true
   filters:
     - cache-name: rate-limit-buckets
-      url:
-        - /links.*
-        - /tg-chat.*
+      url: (links.*)|(/tg-chat.*)
       strategy: first
       http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"Доступ к ресурсу временно ограничен в связи с большим количеством запросов.\" }"
       rate-limits:
-        - cache-key: getRemoteAddr()
+        - cache-key: "getRemoteAddr()"
           bandwidths:
             - capacity: 5
               time: 100
