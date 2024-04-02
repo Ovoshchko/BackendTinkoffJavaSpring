@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(locations = "classpath:/nonexistent.properties")
 @SpringBootTest
 @DirtiesContext
 public class BucketLimitControllerTest {
