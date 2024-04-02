@@ -44,4 +44,12 @@ public class ControllerExceptionHandler {
         );
     }
 
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ApiErrorResponse tooManyRequests(Exception e) {
+        return new ApiErrorResponse(
+            e.getMessage(),
+            String.valueOf(HttpStatus.TOO_MANY_REQUESTS.value())
+        );
+    }
+
 }

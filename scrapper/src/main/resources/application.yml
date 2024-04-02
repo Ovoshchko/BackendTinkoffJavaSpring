@@ -1,7 +1,7 @@
 app:
   scheduler:
     enable: true
-    interval: 5s
+    interval: 25s
     force-check-delay: 5s
   database-access-type: jpa
 
@@ -46,9 +46,33 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  cache:
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
 
 server:
   port: 8080
 
 logging:
   config: classpath:log4j2-plain.xml
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rate-limit-buckets
+      url:
+        - /links.*
+        - /tg-chat.*
+      strategy: first
+      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"Доступ к ресурсу временно ограничен в связи с большим количеством запросов.\" }"
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 5
+              time: 100
+              unit: seconds
+              refill-speed: interval

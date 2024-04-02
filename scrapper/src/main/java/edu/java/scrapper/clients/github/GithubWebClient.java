@@ -2,11 +2,9 @@ package edu.java.scrapper.clients.github;
 
 import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.dto.github.GithubResponse;
-import edu.java.scrapper.exception.ServerUnavaliableError;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 public class GithubWebClient implements GithubClient {
 
