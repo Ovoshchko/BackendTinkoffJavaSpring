@@ -32,6 +32,8 @@ spring:
       - rate-limit-buckets
     caffeine:
       spec: maximumSize=100000,expireAfterAccess=3600s
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
 
 server:
   port: 8090
