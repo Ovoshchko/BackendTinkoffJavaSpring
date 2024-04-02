@@ -1,10 +1,10 @@
 package edu.java.bot.configuration.retry;
 
-import edu.java.bot.configuration.retry.retryparams.RetryParams;
 import edu.java.bot.configuration.retry.backoff.ConstantRetryBackoff;
 import edu.java.bot.configuration.retry.backoff.ExponentialRetryBackoff;
 import edu.java.bot.configuration.retry.backoff.LinearRetryBackoff;
 import edu.java.bot.configuration.retry.backoff.RetryBackoff;
+import edu.java.bot.configuration.retry.retryparams.RetryParams;
 import edu.java.bot.exception.ServerUnavaliableError;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RetryClientConfig {
 
-    public static final String SERVER_ERROR = "У севера проблемы. Попробуйте попозже.";
+    private static final String SERVER_ERROR = "У севера проблемы. Попробуйте попозже.";
     private final RetryConfig retryConfig;
 
     @Bean
@@ -69,7 +69,7 @@ public class RetryClientConfig {
         private final int maxAttempts;
         private final RetryParams retryParams;
 
-        public RetryExchangeFilterFunction(int maxAttempts, RetryParams retryParams) {
+        RetryExchangeFilterFunction(int maxAttempts, RetryParams retryParams) {
             this.maxAttempts = maxAttempts;
             this.retryParams = retryParams;
         }
