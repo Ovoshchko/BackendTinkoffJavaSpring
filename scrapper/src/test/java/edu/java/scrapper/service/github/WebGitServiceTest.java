@@ -3,15 +3,13 @@ package edu.java.scrapper.service.github;
 import edu.java.scrapper.clients.github.GithubWebClient;
 import edu.java.scrapper.dto.github.Commit;
 import edu.java.scrapper.dto.github.GithubResponse;
-import edu.java.scrapper.repository.GitCommitRepository;
+import edu.java.scrapper.repository.jdbc.JdbcGitCommitRepository;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-import edu.java.scrapper.repository.jdbc.JdbcGitCommitRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,7 +34,7 @@ class WebGitServiceTest {
         return Stream.of(
             Arguments.of(
                 URI.create("https://github.com/Ovoshchko/C_course"),
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 new GithubResponse(
                     "C_course",
                     new GithubResponse.Owner("Ovoshch"),
@@ -48,7 +46,7 @@ class WebGitServiceTest {
             ),
             Arguments.of(
                 URI.create("https://github.com/Ovoshchko/C_course"),
-                LocalDateTime.now().minusMinutes(5),
+                OffsetDateTime.now().minusMinutes(5),
                 new GithubResponse(
                     "C_course",
                     new GithubResponse.Owner("Ovoshch"),
@@ -73,7 +71,7 @@ class WebGitServiceTest {
     @MethodSource("provideArgs")
     void checkForUpdates(
         URI url,
-        LocalDateTime time,
+        OffsetDateTime time,
         GithubResponse response,
         Commit[] commits,
         List<String> description
@@ -88,7 +86,8 @@ class WebGitServiceTest {
             when(githubClient.checkCommits(owner, repo)).thenReturn(commits);
         }
 
-        List<String> serviceResponse = webGitService.checkForUpdates(url, time);
+        List<String> serviceResponse =
+            webGitService.checkForUpdates(url, time.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
 
         assertThat(serviceResponse).isEqualTo(description);
     }

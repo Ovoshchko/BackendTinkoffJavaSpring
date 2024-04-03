@@ -5,6 +5,15 @@ api:
   scrapper:
     baseUrl: http://localhost:8080/
 
+client:
+  retry:
+    initial-interval: 1s
+    max-attempts: 5
+    max-interval: 2s
+    multiplier: 2
+    codes: 500, 501, 502, 503 ,504
+  backoff: linear
+
 springdoc:
   default-produces-media-type: application/json
   swagger-ui:
@@ -18,9 +27,32 @@ spring:
     name: bot
   jackson:
     time-zone: UTC
+  cache:
+    cache-names:
+      - rate-limit-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
 
 server:
   port: 8090
 
 logging:
   config: classpath:log4j2-plain.xml
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rate-limit-buckets
+      url:
+        - /updates.*
+      strategy: first
+      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"Доступ к ресурсу временно ограничен в связи с большим количеством запросов.\" }"
+      rate-limits:
+        - cache-key: getRemoteAddr()
+          bandwidths:
+            - capacity: 5
+              time: 100
+              unit: seconds
+              refill-speed: interval

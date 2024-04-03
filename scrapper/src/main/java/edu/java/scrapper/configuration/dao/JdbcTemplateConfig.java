@@ -1,4 +1,4 @@
-package edu.java.scrapper.configuration;
+package edu.java.scrapper.configuration.dao;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,6 +7,7 @@ import edu.java.scrapper.model.GitCommit;
 import edu.java.scrapper.repository.GitCommitRepository;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class WebGitService implements GitService {
 
             GithubResponse githubResponse = githubClient.fetchUpdate(user, repo);
 
-            if (time.isBefore(githubResponse.lastUpdateTime().toLocalDateTime())) {
+            if (time.isBefore(githubResponse.lastUpdateTime().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())) {
                 description = List.of(url + " " + UNKNOWN_UPDATE);
 
                 Commit[] commits = githubClient.checkCommits(user, repo);

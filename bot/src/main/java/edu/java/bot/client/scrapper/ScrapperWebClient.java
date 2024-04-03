@@ -5,10 +5,12 @@ import edu.java.bot.dto.request.RemoveLinkRequest;
 import edu.java.bot.dto.response.ApiErrorResponse;
 import edu.java.bot.dto.response.LinkResponse;
 import edu.java.bot.dto.response.ListLinksResponse;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -16,13 +18,15 @@ import reactor.core.publisher.Mono;
 
 public class ScrapperWebClient implements ScrapperClient {
 
+    public static final LinkResponse NAN_RESPONSE = new LinkResponse(0L, URI.create("Nan"));
+    public static final List<LinkResponse> NAN_RESPONSE_LIST = List.of(NAN_RESPONSE);
     private final static String UPDATE_WEB_PATH = "/tg-chat/{tgChatId}";
     private final static String LINKS_WEB_PATH = "/links";
     private final static String CHATS_WEB_PARAM = "Tg-Chat-Id";
     private final WebClient webClient;
 
-    public ScrapperWebClient(String baseUrl) {
-        webClient = WebClient.builder().baseUrl(baseUrl).build();
+    public ScrapperWebClient(String baseUrl, ExchangeFilterFunction exchangeFilterFunction) {
+        webClient = WebClient.builder().baseUrl(baseUrl).filter(exchangeFilterFunction).build();
     }
 
     @Override
@@ -34,6 +38,8 @@ public class ScrapperWebClient implements ScrapperClient {
             .bodyToMono(String.class)
             .onErrorResume(WebClientResponseException.class, e ->
                 Mono.just(Objects.requireNonNull(e.getResponseBodyAs(ApiErrorResponse.class)).description()))
+            .onErrorResume(Exception.class, e ->
+                Mono.just(e.getMessage()))
             .block();
     }
 
@@ -57,6 +63,7 @@ public class ScrapperWebClient implements ScrapperClient {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(ListLinksResponse.class)
+            .onErrorReturn(new ListLinksResponse(NAN_RESPONSE_LIST, NAN_RESPONSE_LIST.size()))
             .block()
             .links();
     }

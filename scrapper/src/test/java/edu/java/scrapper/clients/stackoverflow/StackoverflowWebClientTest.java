@@ -3,20 +3,31 @@ package edu.java.scrapper.clients.stackoverflow;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Body;
+import edu.java.scrapper.configuration.retry.RetryClientConfig;
+import edu.java.scrapper.configuration.retry.backoff.ConstantRetryBackoff;
+import edu.java.scrapper.configuration.retry.retryparams.RetryParams;
 import edu.java.scrapper.dto.stackoverflow.Answer;
 import edu.java.scrapper.dto.stackoverflow.ListAnswer;
 import edu.java.scrapper.dto.stackoverflow.StackoverflowResponse;
-import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import edu.java.scrapper.exception.ServerUnavaliableError;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StackoverflowWebClientTest {
     private final static String SERVER_RESPONSE = """
@@ -97,8 +108,19 @@ class StackoverflowWebClientTest {
         )
     );
     private final static Long ID = 72647357L;
-
+    private static final int MAX_ATTEMPTS = 5;
+    public static final String SITE_HEADER = "?site=stackoverflow";
+    public static final String ANSWER_ENDPOINT = "/answers";
+    public static final String QUESTION_PATH = "/questions/";
+    public static final String HTTP_LOCALHOST = "http://localhost:";
     private static WireMockServer wireMockServer;
+    private final ExchangeFilterFunction retryFilterFunction = new RetryClientConfig.RetryExchangeFilterFunction(
+        MAX_ATTEMPTS,
+        new RetryParams(
+            new ConstantRetryBackoff(Duration.ofSeconds(1L)),
+            new HashSet<>(List.of(HttpStatus.INTERNAL_SERVER_ERROR))
+        )
+    );
 
     @BeforeAll
     static void init() {
@@ -114,15 +136,15 @@ class StackoverflowWebClientTest {
 
     @Test
     void fetchUpdate() {
-        wireMockServer.stubFor(get(urlPathEqualTo("/questions/" + ID))
+        wireMockServer.stubFor(get(urlPathEqualTo(QUESTION_PATH + ID))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withResponseBody(new Body(SERVER_RESPONSE))));
 
-        String baseUrl = "http://localhost:" + wireMockServer.port();
+        String baseUrl = HTTP_LOCALHOST + wireMockServer.port();
 
-        StackoverflowClient client = new StackoverflowWebClient(baseUrl);
+        StackoverflowClient client = new StackoverflowWebClient(baseUrl, retryFilterFunction);
         StackoverflowResponse result = client.fetchUpdate(ID);
 
         assertThat(result).isEqualTo(ANSWER);
@@ -130,18 +152,38 @@ class StackoverflowWebClientTest {
 
     @Test
     void checkForAnswers() {
-        wireMockServer.stubFor(get(urlPathEqualTo("/questions/" + ID + "/answers"))
+        wireMockServer.stubFor(get(urlPathEqualTo(QUESTION_PATH + ID + ANSWER_ENDPOINT))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withResponseBody(new Body(ANSWER_JSON))));
 
-        String baseUrl = "http://localhost:" + wireMockServer.port();
+        String baseUrl = HTTP_LOCALHOST + wireMockServer.port();
 
-        StackoverflowClient client = new StackoverflowWebClient(baseUrl);
+        StackoverflowClient client = new StackoverflowWebClient(baseUrl, retryFilterFunction);
         ListAnswer response = client.checkForAnswers(ID);
 
         assertThat(response).isEqualTo(ANSWER_ANSWER);
+    }
+
+    @Test
+    void checkServerError() {
+        wireMockServer.stubFor(get(urlPathEqualTo(QUESTION_PATH + ID + ANSWER_ENDPOINT))
+            .willReturn(aResponse()
+                .withStatus(500)
+                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .withResponseBody(new Body(" "))));
+
+        String baseUrl = HTTP_LOCALHOST + wireMockServer.port();
+
+        StackoverflowClient client = new StackoverflowWebClient(baseUrl, retryFilterFunction);
+
+        assertThrows(ServerUnavaliableError.class, () -> client.checkForAnswers(ID));
+;
+        verify(
+            WireMock.moreThan(MAX_ATTEMPTS - 1),
+            getRequestedFor(urlEqualTo(QUESTION_PATH + ID + ANSWER_ENDPOINT + SITE_HEADER))
+        );
     }
 
 }
