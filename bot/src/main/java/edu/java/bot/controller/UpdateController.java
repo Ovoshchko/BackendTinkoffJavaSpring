@@ -1,7 +1,7 @@
 package edu.java.bot.controller;
 
 import edu.java.bot.dto.request.LinkUpdate;
-import edu.java.bot.service.UpdateService;
+import edu.java.bot.service.update_processor.UpdateProcessorService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class UpdateController {
 
-    private final UpdateService updateService;
+    private final UpdateProcessorService updateProcessorService;
 
     @PostMapping
     @Operation(summary = "Обновление ссылки")
     public ResponseEntity postUpdate(@RequestBody @Valid LinkUpdate linkUpdate) {
-        updateService.postUpdate(linkUpdate);
+        updateProcessorService.postUpdate(linkUpdate);
         return ResponseEntity.status(HttpStatus.OK).body("Всё ок");
     }
 }

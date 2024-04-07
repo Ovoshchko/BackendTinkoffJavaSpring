@@ -14,7 +14,8 @@ public record ApplicationConfig(
     @NotNull
     Scheduler scheduler,
     @NotNull
-    AccessType databaseAccessType
+    AccessType databaseAccessType,
+    boolean useQueue
 ) {
     @Bean
     public Scheduler getScheduler() {

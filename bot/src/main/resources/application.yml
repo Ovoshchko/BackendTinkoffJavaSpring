@@ -1,5 +1,6 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
+  scrapper-topic: linkUpdate
 
 api:
   scrapper:
@@ -34,6 +35,25 @@ spring:
       spec: maximumSize=100000,expireAfterAccess=3600s
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+
+
+kafka:
+  consumer:
+    topic: linkUpdate
+    topic_dlq: linkUpdate_dlq
+    bootstrap-servers: localhost:29092
+    group-id: scrapper_consumer_group
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: edu.java.bot.utils.LinkUpdateDeserializer
+    enable-auto-commit: true
+    auto-commit-interval-ms: 10000
+  producer:
+    bootstrap-servers: localhost:29092
+    topic_dlq: linkUpdate_dlq
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    type: edu.java.scrapper.dto.request.LinkUpdate
 
 server:
   port: 8090

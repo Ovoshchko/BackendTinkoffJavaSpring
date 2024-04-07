@@ -1,4 +1,4 @@
-package edu.java.bot.service;
+package edu.java.bot.service.update_processor;
 
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.dto.request.LinkUpdate;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UpdateService {
+public class AllUpdateProcessorService implements UpdateProcessorService {
 
     private final CommandListener commandListener;
 

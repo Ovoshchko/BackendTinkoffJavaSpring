@@ -1,7 +1,7 @@
 package edu.java.bot.controller;
 
 import com.giffing.bucket4j.spring.boot.starter.filter.servlet.ServletRequestFilter;
-import edu.java.bot.service.UpdateService;
+import edu.java.bot.service.update_processor.AllUpdateProcessorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -33,7 +32,7 @@ public class BucketLimitControllerTest {
         }
         """;
     @MockBean
-    private UpdateService updateService;
+    private AllUpdateProcessorService updateProcessorService;
     @Autowired
     private WebApplicationContext context;
     @Autowired
@@ -44,7 +43,7 @@ public class BucketLimitControllerTest {
     public void init() {
         var bean = context.getBean(ServletRequestFilter.class);
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(bean).build();
-        doNothing().when(updateService).postUpdate(any());
+        doNothing().when(updateProcessorService).postUpdate(any());
         cacheManager.getCache("rate-limit-buckets").clear();
     }
 
