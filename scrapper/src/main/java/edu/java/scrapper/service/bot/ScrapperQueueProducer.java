@@ -8,7 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Data
 public class ScrapperQueueProducer implements BotService {
 
-    public static final String SUCCESS = "Success";
+    private static final String SUCCESS = "Success";
     private final KafkaTemplate<String, LinkUpdate> kafkaTemplate;
     private final KafkaProducerProperties kafkaProducerProperties;
 
