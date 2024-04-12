@@ -2,7 +2,7 @@ package edu.java.bot.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.bot.dto.request.LinkUpdate;
-import edu.java.bot.service.UpdateService;
+import edu.java.bot.service.update_processor.AllUpdateProcessorService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class UpdateControllerTest {
     private final static LinkUpdate LINK_UPDATE = new LinkUpdate(1L, "https://github.com", List.of("desc"), List.of(1L, 2L));
 
     @Mock
-    private UpdateService updateService;
+    private AllUpdateProcessorService updateProcessorService;
     @InjectMocks
     private UpdateController updateController;
     private MockMvc mockMvc;
@@ -37,7 +37,7 @@ class UpdateControllerTest {
     @Test
     void postUpdateReturns200() throws Exception {
 
-        doNothing().when(updateService).postUpdate(any(LinkUpdate.class));
+        doNothing().when(updateProcessorService).postUpdate(any(LinkUpdate.class));
 
         mockMvc.perform(post("/updates")
                 .contentType(MediaType.APPLICATION_JSON)

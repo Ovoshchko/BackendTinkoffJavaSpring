@@ -1,11 +1,14 @@
 package edu.java.scrapper.scheduler;
 
 import edu.java.scrapper.configuration.SchedulerParams;
+import edu.java.scrapper.dto.request.LinkUpdate;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.service.github.GitService;
 import edu.java.scrapper.service.stackoverflow.StackoverflowService;
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,44 +27,49 @@ public class LinkUpdateScheduler {
 
     @Scheduled(fixedDelayString = "#{@getScheduler.interval.toMillis()}")
     public void update() {
-        List<Long> users;
         List<Link> links =
             params.getLinkRepository()
                 .findLinksUpdatedMoreThanNMinutesAgo(params.getScheduler().interval().toMinutes())
                 .stream().toList();
 
+        for (LinkUpdate linkUpdate : getDescriptions(links)) {
+            params.getBotService().postUpdate(linkUpdate);
+        }
+    }
+
+    private List<LinkUpdate> getDescriptions(List<Link> links) {
+        List<Long> users;
+        List<String> description = new ArrayList<>();
+        List<LinkUpdate> updates = new ArrayList<>();
+
         for (Link link : links) {
             users = params.getUserLinkRepository().getAllUsersByLink(link).stream().toList();
             URI url = URI.create(link.getLink());
             if (GITHUB_HOST.equals(url.getHost())) {
-                List<String> description =
-                    webGitService.checkForUpdates(
-                        url,
-                        LocalDateTime.now().minus(params.getScheduler().forceCheckDelay())
-                    );
-                if (!description.isEmpty()) {
-                    params.getBotService().postUpdate(
-                        link.getId(),
-                        url,
-                        description,
-                        users
-                    );
-                }
+                description = getGitDescription(url);
             } else if (STACKOVERFLOW_HOST.equals(url.getHost())) {
-                List<String> description =
-                    webStackoverflowService.checkForUpdates(
-                        url,
-                        LocalDateTime.now().minus(params.getScheduler().forceCheckDelay())
-                    );
-                if (!description.isEmpty()) {
-                    params.getBotService().postUpdate(
-                        link.getId(),
-                        url,
-                        List.of(UPDATED),
-                        users
-                    );
-                }
+                description = getStackOverflowDescription(url);
+            }
+            if ((description != null) && (!description.isEmpty())) {
+                updates.add(new LinkUpdate(link.getId(), url, description, users));
             }
         }
+
+        return updates;
+    }
+
+    private List<String> getGitDescription(URI url) {
+        return webGitService.checkForUpdates(
+            url,
+            OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime().minus(params.getScheduler().forceCheckDelay())
+        );
+    }
+
+
+    private List<String> getStackOverflowDescription(URI url) {
+        return webStackoverflowService.checkForUpdates(
+            url,
+            OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime().minus(params.getScheduler().forceCheckDelay())
+        );
     }
 }

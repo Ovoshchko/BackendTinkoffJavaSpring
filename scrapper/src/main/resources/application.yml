@@ -4,6 +4,7 @@ app:
     interval: 25s
     force-check-delay: 5s
   database-access-type: jpa
+  use-queue: false
 
 api:
   bot:
@@ -53,6 +54,17 @@ spring:
       spec: maximumSize=100000,expireAfterAccess=3600s
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
+
+
+kafka:
+  producer:
+    bootstrap-servers: localhost:29092
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    type: edu.java.scrapper.dto.request.LinkUpdate
+    topic: linkUpdate
+    partitions: 3
+    replication_factor: 1
 
 server:
   port: 8080
