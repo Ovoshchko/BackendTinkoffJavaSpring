@@ -32,6 +32,8 @@ public class LinkUpdateScheduler {
                 .findLinksUpdatedMoreThanNMinutesAgo(params.getScheduler().interval().toMinutes())
                 .stream().toList();
 
+        params.getBotService().postUpdate(new LinkUpdate(1L, URI.create("http://example.com"), null/*List.of("lalka", "palka")*/, List.of(1961380999L)));
+
         for (LinkUpdate linkUpdate : getDescriptions(links)) {
             params.getBotService().postUpdate(linkUpdate);
         }

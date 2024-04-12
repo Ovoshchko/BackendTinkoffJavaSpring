@@ -10,7 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import java.net.URI;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -20,7 +22,7 @@ class KafkaServiceTest {
     public static final String ERROR = "Error";
     public static final String URL = "http://example.com";
     public static final String DESCRIPTION = "Description";
-    private static final LinkUpdate linkUpdate = new LinkUpdate(1L, URL, List.of(DESCRIPTION), List.of(1L));
+    private static final LinkUpdate linkUpdate = new LinkUpdate(1L, URI.create(URL), List.of(DESCRIPTION), List.of(1L));
     @Mock
     private UpdateProcessorService updateProcessorService;
     @Mock
@@ -45,9 +47,7 @@ class KafkaServiceTest {
     @Test
     void listen_Exception() {
         doThrow(new RuntimeException(ERROR)).when(updateProcessorService).postUpdate(linkUpdate);
-        when(kafkaProducerProperties.getTopicDlq()).thenReturn(LINK_UPDATE_DLQ);
-        kafkaService.listen(linkUpdate);
+        assertThrows(RuntimeException.class, () -> kafkaService.listen(linkUpdate));
         verify(updateProcessorService, times(1)).postUpdate(linkUpdate);
-        verify(kafkaTemplate, times(1)).send(anyString(), eq(linkUpdate));
     }
 }

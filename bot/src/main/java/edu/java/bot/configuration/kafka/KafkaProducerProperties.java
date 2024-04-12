@@ -14,6 +14,5 @@ public class KafkaProducerProperties {
     private String bootstrapServers;
     private String keySerializer;
     private String valueSerializer;
-    private String topicDlq;
     private String type;
 }

@@ -7,12 +7,19 @@ import edu.java.bot.kafka.KafkaIntegrationTest;
 import edu.java.bot.service.update_processor.AllUpdateProcessorService;
 import edu.java.bot.service.update_processor.UpdateProcessorService;
 import edu.java.bot.utils.LinkUpdateDeserializer;
+import java.net.URI;
+import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -23,6 +30,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,9 +38,11 @@ import static org.mockito.Mockito.verify;
 
 class KafkaServiceKafkaTest extends KafkaIntegrationTest {
     public static final LinkUpdate LINK_UPDATE_VALID =
-        new LinkUpdate(1L, "http://example.com", List.of("description"), List.of(1L));
+        new LinkUpdate(1L, URI.create("http://example.com"), List.of("description"), List.of(1L));
     public static final LinkUpdate LINK_UPDATE_INVALID =
-        new LinkUpdate(1L, "http://example.com", null, null);
+        new LinkUpdate(1L, URI.create("http://example.com"), null, null);
+    public static final String DLT_PREFIX = "-dlt";
+    public static final String EARLIEST = "earliest";
     @Autowired
     private KafkaConsumerProperties kafkaConsumerProperties;
     @Autowired
@@ -63,17 +73,27 @@ class KafkaServiceKafkaTest extends KafkaIntegrationTest {
     @Test
     void testListen_Invalid() throws InterruptedException {
 
-        KafkaTemplate kafkaTemplateMock = mock(KafkaTemplate.class);
-        ReflectionTestUtils.setField(kafkaService, "kafkaTemplate", kafkaTemplateMock);
-
         kafkaTemplate.send(
             kafkaConsumerProperties.getTopic(),
             LINK_UPDATE_INVALID
         );
 
-        Thread.sleep(3000);
+        Consumer<String, LinkUpdate> consumer = new KafkaConsumer<>(consumerProps());
+        consumer.subscribe(Collections.singleton(kafkaConsumerProperties.getTopic() + DLT_PREFIX));
 
-        verify(kafkaTemplateMock, times(1)).send(kafkaProducerProperties.getTopicDlq(), LINK_UPDATE_INVALID);
+        ConsumerRecords<String, LinkUpdate> records = consumer.poll(Duration.ofMillis(10000));
+
+        assertEquals(1, records.count());
+    }
+
+    private Map<String, Object> consumerProps() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LinkUpdateDeserializer.class);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, EARLIEST);
+        return props;
     }
 
     @TestConfiguration
