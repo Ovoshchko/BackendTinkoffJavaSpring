@@ -57,11 +57,32 @@ services:
     volumes:
       - kafka:/var/lib/kafka/data
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      docker.host: 172.17.0.1
+
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=ovoshchko
+      - GF_SECURITY_ADMIN_PASSWORD=qwerty15112003
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+
 volumes:
   postgresql: { }
   kafka: { }
   zookeeper_data: { }
   zookeeper_logs: { }
+  grafana_data: { }
 
 networks:
   backend: { }

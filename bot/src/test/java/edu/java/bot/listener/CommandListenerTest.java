@@ -6,12 +6,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.CommandHandler;
-import edu.java.bot.commands.single_commands.HelpCommand;
-import edu.java.bot.commands.single_commands.ListCommand;
-import edu.java.bot.commands.single_commands.StartCommand;
-import edu.java.bot.commands.single_commands.TrackCommand;
-import edu.java.bot.commands.single_commands.UntrackCommand;
-import java.util.ArrayList;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +24,9 @@ class CommandListenerTest {
     private final static Chat CHAT = mock(Chat.class);
     private final static Message MESSAGE = mock(Message.class);
     private final static Update UPDATE = mock(Update.class);
-    private final static CommandListener commandListener = new CommandListener(BOT_MOCK, COMMAND_HANDLER_MOCK);
+    private final static MeterRegistry meterRegistry = mock(MeterRegistry.class);
+    private final static CommandListener commandListener =
+        new CommandListener(BOT_MOCK, COMMAND_HANDLER_MOCK, meterRegistry);
 
     @BeforeAll
     static void init() {

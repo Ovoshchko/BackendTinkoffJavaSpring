@@ -36,6 +36,29 @@ spring:
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
 
+management:
+  server:
+    port: 8091
+    ssl:
+      enabled: false
+
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+      base-path: /
+      path-mapping:
+        prometheus: "/metrics"
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
 
 kafka:
   consumer:
@@ -70,7 +93,7 @@ bucket4j:
       rate-limits:
         - cache-key: getRemoteAddr()
           bandwidths:
-            - capacity: 5
+            - capacity: 20
               time: 100
               unit: seconds
               refill-speed: interval
