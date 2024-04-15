@@ -3,6 +3,7 @@ package edu.java.bot.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.bot.dto.request.LinkUpdate;
 import edu.java.bot.service.update_processor.AllUpdateProcessorService;
+import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class UpdateControllerTest {
 
-    private final static LinkUpdate LINK_UPDATE = new LinkUpdate(1L, "https://github.com", List.of("desc"), List.of(1L, 2L));
+    private final static LinkUpdate LINK_UPDATE = new LinkUpdate(1L, URI.create("https://github.com"), List.of("desc"), List.of(1L, 2L));
 
     @Mock
     private AllUpdateProcessorService updateProcessorService;

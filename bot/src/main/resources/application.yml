@@ -36,11 +36,33 @@ spring:
     jcache:
       provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
 
+management:
+  server:
+    port: 8091
+    ssl:
+      enabled: false
+
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+      base-path: /
+      path-mapping:
+        prometheus: "/metrics"
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
 
 kafka:
   consumer:
     topic: linkUpdate
-    topic_dlq: linkUpdate_dlq
     bootstrap-servers: localhost:29092
     group-id: scrapper_consumer_group
     auto-offset-reset: earliest
@@ -50,10 +72,9 @@ kafka:
     auto-commit-interval-ms: 10000
   producer:
     bootstrap-servers: localhost:29092
-    topic_dlq: linkUpdate_dlq
     key-serializer: org.apache.kafka.common.serialization.StringSerializer
     value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    type: edu.java.scrapper.dto.request.LinkUpdate
+    type: edu.java.bot.dto.request.LinkUpdate
 
 server:
   port: 8090
@@ -72,7 +93,7 @@ bucket4j:
       rate-limits:
         - cache-key: getRemoteAddr()
           bandwidths:
-            - capacity: 5
+            - capacity: 20
               time: 100
               unit: seconds
               refill-speed: interval

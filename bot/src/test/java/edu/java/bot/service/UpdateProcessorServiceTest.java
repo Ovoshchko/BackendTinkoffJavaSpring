@@ -2,6 +2,7 @@ package edu.java.bot.service;
 
 import edu.java.bot.dto.request.LinkUpdate;
 import edu.java.bot.listener.CommandListener;
+import java.net.URI;
 import java.util.List;
 
 import edu.java.bot.service.update_processor.AllUpdateProcessorService;
@@ -19,7 +20,8 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UpdateProcessorServiceTest {
 
-    private final static LinkUpdate VALID_LINK_UPDATE = new LinkUpdate(1L, "https://ok.com", List.of("ok"), List.of(1L));
+    private final static LinkUpdate VALID_LINK_UPDATE = new LinkUpdate(1L,
+        URI.create("https://ok.com"), List.of("ok"), List.of(1L));
 
     @Mock
     private CommandListener listener;

@@ -14,7 +14,7 @@ public class AllUpdateProcessorService implements UpdateProcessorService {
 
     public void postUpdate(LinkUpdate linkUpdate) {
 
-        String description = String.join("", linkUpdate.description());
+        String description = String.join(System.lineSeparator(), linkUpdate.description());
 
         for (Long id : linkUpdate.tgChatIds()) {
             commandListener.sendMessage(new SendMessage(

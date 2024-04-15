@@ -1,6 +1,7 @@
 package edu.java.bot.utils;
 
 import edu.java.bot.dto.request.LinkUpdate;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.kafka.common.errors.SerializationException;
@@ -13,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LinkUpdateDeserializerTest {
     private static final LinkUpdateDeserializer DESERIALIZER = new LinkUpdateDeserializer();
     private static final String TOPIC = "test-topic";
-    public static final LinkUpdate LINK_UPDATE = new LinkUpdate(1L, "http://example.com", List.of("description"), List.of(1L));
+    public static final LinkUpdate LINK_UPDATE = new LinkUpdate(1L,
+        URI.create("http://example.com"), List.of("description"), List.of(1L));
 
     @Test
     void deserialize_Success() {
