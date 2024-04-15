@@ -6,14 +6,14 @@ import edu.java.scrapper.model.Link;
 import edu.java.scrapper.service.github.GitService;
 import edu.java.scrapper.service.link.LinkService;
 import edu.java.scrapper.service.stackoverflow.StackoverflowService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Slf4j
 @RequiredArgsConstructor

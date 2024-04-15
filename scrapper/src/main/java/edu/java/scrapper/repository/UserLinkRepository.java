@@ -1,9 +1,8 @@
 package edu.java.scrapper.repository;
 
 import edu.java.scrapper.model.Link;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserLinkRepository {
 

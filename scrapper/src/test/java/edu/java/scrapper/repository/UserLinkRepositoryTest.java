@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UserLinkRepositoryTest extends IntegrationTest {
 
     private static final Long USER_ID = 12345L;
+    private static final long LINK_ID = 12345432L;
     private static final URI LINK_URI = URI.create("https://example.com");
     @Autowired
     private List<UserLinkRepository> userLinkRepositories;

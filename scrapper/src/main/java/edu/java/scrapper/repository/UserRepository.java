@@ -1,9 +1,8 @@
 package edu.java.scrapper.repository;
 
 import edu.java.scrapper.model.User;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserRepository {
     List<User> findAll();

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.USERS;
 
 @Repository

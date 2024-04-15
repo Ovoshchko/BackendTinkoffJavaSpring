@@ -4,10 +4,10 @@ import edu.java.scrapper.exception.NotFoundException;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.model.User;
 import edu.java.scrapper.repository.UserLinkRepository;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
-import java.util.Collection;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.LINKS;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.USERLINK;
 

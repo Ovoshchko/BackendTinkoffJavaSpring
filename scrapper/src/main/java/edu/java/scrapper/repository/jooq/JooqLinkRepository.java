@@ -1,10 +1,8 @@
 package edu.java.scrapper.repository.jooq;
 
-import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import java.net.URI;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -13,7 +11,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.LINKS;
 import static edu.java.scrapper.domain.jooq.linkviewer.Tables.USERLINK;
 import static org.jooq.impl.DSL.select;

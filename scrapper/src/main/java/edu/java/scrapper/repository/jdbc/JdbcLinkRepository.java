@@ -1,6 +1,5 @@
 package edu.java.scrapper.repository.jdbc;
 
-import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.query.LinksQuery;
