@@ -3,6 +3,7 @@ package edu.java.scrapper.repository;
 import edu.java.scrapper.model.GitCommit;
 import java.net.URI;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface GitCommitRepository {
     String NAME_NAME = "name";
@@ -12,5 +13,6 @@ public interface GitCommitRepository {
 
     List<GitCommit> getCommitByUrl(URI url);
 
+    @Transactional
     Integer addCommit(GitCommit commit);
 }

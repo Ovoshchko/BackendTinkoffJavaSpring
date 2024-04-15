@@ -4,15 +4,16 @@ import edu.java.scrapper.configuration.SchedulerParams;
 import edu.java.scrapper.dto.request.LinkUpdate;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.service.github.GitService;
+import edu.java.scrapper.service.link.LinkService;
 import edu.java.scrapper.service.stackoverflow.StackoverflowService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class LinkUpdateScheduler {
     private final GitService webGitService;
     private final StackoverflowService webStackoverflowService;
     private final SchedulerParams params;
+    private final LinkService linkService;
 
     @Scheduled(fixedDelayString = "#{@getScheduler.interval.toMillis()}")
     public void update() {
@@ -53,6 +55,7 @@ public class LinkUpdateScheduler {
             if ((description != null) && (!description.isEmpty())) {
                 updates.add(new LinkUpdate(link.getId(), url, description, users));
             }
+            linkService.updateLinkLastCheck(link);
         }
 
         return updates;
@@ -64,7 +67,6 @@ public class LinkUpdateScheduler {
             OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime().minus(params.getScheduler().forceCheckDelay())
         );
     }
-
 
     private List<String> getStackOverflowDescription(URI url) {
         return webStackoverflowService.checkForUpdates(

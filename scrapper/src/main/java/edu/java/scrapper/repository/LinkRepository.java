@@ -4,14 +4,20 @@ import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import java.net.URI;
 import java.util.Collection;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface LinkRepository {
 
     Link exists(URI link);
 
-    LinkResponse add(long id, URI link);
+    @Transactional
+    Link add(long id, URI link);
 
-    LinkResponse delete(long id, URI link);
+    @Transactional
+    void updateLastCheck(Link link);
+
+    @Transactional
+    void delete(long id, URI link);
 
     Collection<Link> listAll();
 

@@ -31,16 +31,28 @@ public class DbLinkService implements LinkService {
             Link existing = linkRepository.exists(addLinkRequest.link());
 
             if (existing == null) {
-                return linkRepository.add(tgChatId, addLinkRequest.link());
+                existing = linkRepository.add(tgChatId, addLinkRequest.link());
             }
 
-            return new LinkResponse(tgChatId, addLinkRequest.link());
+            userLinkRepository.add(tgChatId, existing);
+
+            return new LinkResponse(existing.getId(), addLinkRequest.link());
         } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
     }
 
     public LinkResponse deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
-        return linkRepository.delete(tgChatId, removeLinkRequest.link());
+
+        Link link = linkRepository.exists(removeLinkRequest.link());
+
+        userLinkRepository.delete(tgChatId, link);
+
+        return new LinkResponse(link.getId(), removeLinkRequest.link());
+    }
+
+    @Override
+    public void updateLinkLastCheck(Link link) {
+        linkRepository.updateLastCheck(link);
     }
 }

@@ -9,6 +9,7 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @AllArgsConstructor
@@ -41,7 +41,8 @@ public class JdbcLinkRepository implements LinkRepository {
                 existingLink.setLastCheck(timestamp != null ? timestamp.toLocalDateTime() : null);
                 return existingLink;
             },
-            link.toString());
+            link.toString()
+        );
 
         if (links.isEmpty()) {
             return null;
@@ -51,8 +52,9 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
-    public LinkResponse add(long id, URI link) {
+    public Link add(long id, URI link) {
+
+        Timestamp now = Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -60,21 +62,27 @@ public class JdbcLinkRepository implements LinkRepository {
             statement.setString(1, link.toString());
             statement.setTimestamp(
                 2,
-                Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+                now
             );
             return statement;
         }, keyHolder);
 
         Long linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
-        jdbcTemplate.update(userLinkQuery.getInsertIntoUserlink(), id, linkId);
-
-        return new LinkResponse(id, link);
+        return new Link().setId(linkId).setLink(link.toString()).setLastCheck(now.toLocalDateTime());
     }
 
     @Override
-    @Transactional
-    public LinkResponse delete(long id, URI link) {
+    public void updateLastCheck(Link link) {
+        jdbcTemplate.update(
+            linksQuery.getUpdateLastCheckTime(),
+            Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()),
+            link.getId()
+        );
+    }
+
+    @Override
+    public void delete(long id, URI link) {
 
         List<Long> linkIds = jdbcTemplate.queryForList(linksQuery.getSelectLinkIdByUrl(), Long.class, link.toString());
 
@@ -83,8 +91,6 @@ public class JdbcLinkRepository implements LinkRepository {
         }
 
         jdbcTemplate.update(linksQuery.getDeleteFromLinks(), linkIds.get(0));
-
-        return new LinkResponse(id, link);
     }
 
     @Override

@@ -12,4 +12,5 @@ public class LinksQuery {
     private final String selectAllLinks = "SELECT * FROM links;";
     private final String selectLinksByLastCheckBefore = "SELECT * FROM links WHERE last_check < ?;";
     private final String deleteFromLinks = "DELETE FROM links WHERE id = ?;";
+    private final String updateLastCheckTime = "UPDATE links SET last_check = ? WHERE id = ?";
 }

@@ -4,11 +4,12 @@ import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import java.net.URI;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -31,27 +32,27 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
-    public LinkResponse add(long id, URI link) {
-        long idResponse = Objects.requireNonNull(dsl.insertInto(LINKS).set(LINKS.URL, link.toString())
-                .set(LINKS.LAST_CHECK, LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
-                .returning(LINKS.ID)
-                .fetchOne())
-            .getValue(LINKS.ID);
-
-        dsl.insertInto(USERLINK).set(USERLINK.USER_ID, id).set(USERLINK.LINK_ID, idResponse)
-            .execute();
-
-        return new LinkResponse(id, link);
+    public Link add(long id, URI link) {
+        return dsl.insertInto(LINKS).set(LINKS.URL, link.toString())
+            .set(LINKS.LAST_CHECK, LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+            .returning()
+            .fetchInto(Link.class)
+            .get(0);
     }
 
     @Override
-    @Transactional
-    public LinkResponse delete(long id, URI link) {
+    public void updateLastCheck(Link link) {
+        dsl.update(LINKS)
+            .set(LINKS.LAST_CHECK, OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime())
+            .where(LINKS.ID.eq(link.getId()))
+            .execute();
+    }
+
+    @Override
+    public void delete(long id, URI link) {
         dsl.deleteFrom(USERLINK).where(USERLINK.LINK_ID.in(select(LINKS.ID).from(LINKS)
             .where(LINKS.URL.in(link.toString())))).execute();
         dsl.deleteFrom(LINKS).where(LINKS.URL.eq(link.toString())).execute();
-        return new LinkResponse(id, link);
     }
 
     @Override

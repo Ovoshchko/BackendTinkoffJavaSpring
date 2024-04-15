@@ -15,7 +15,6 @@ public class JpaStackoverflowAnswerRepository implements StackoverflowAnswerRepo
     private final StackoverflowAnswerDao stackoverflowAnswerDao;
 
     @Override
-    @Transactional
     public Integer addAnswer(StackoverflowAnswer answer) {
         stackoverflowAnswerDao.saveAndFlush(answer);
         return 1;

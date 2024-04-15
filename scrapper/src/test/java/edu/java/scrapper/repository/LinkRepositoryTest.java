@@ -1,7 +1,6 @@
 package edu.java.scrapper.repository;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import java.net.URI;
 import java.sql.PreparedStatement;
@@ -17,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import scala.concurrent.impl.FutureConvertersImpl;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -70,7 +69,7 @@ class LinkRepositoryTest extends IntegrationTest {
             return statement;
         });
 
-        for (LinkRepository linkRepository: linkRepositories) {
+        for (LinkRepository linkRepository : linkRepositories) {
             Link link = linkRepository.exists(LINK_URI);
 
             assertEquals(LINK_URI.toString(), link.getLink());
@@ -87,7 +86,10 @@ class LinkRepositoryTest extends IntegrationTest {
             jdbcTemplate.update("DELETE FROM userlink;");
             jdbcTemplate.update("DELETE FROM links;");
 
-            LinkResponse response = linkRepository.add(USER_ID, LINK_URI);
+            Link response = linkRepository.add(USER_ID, LINK_URI);
+            long roundedNanos = Math.round(response.getLastCheck().getNano() / 1000.0) * 1000;
+            response.setLastCheck(response.getLastCheck().withNano(0)
+                .plusNanos(roundedNanos));
 
             List<Link> links = jdbcTemplate.query(
                 "SELECT * FROM links;",
@@ -101,9 +103,7 @@ class LinkRepositoryTest extends IntegrationTest {
                 }
             );
 
-            assertEquals(LINK_URI.toString(), response.url().toString());
-            assertEquals(USER_ID, response.id());
-            assertEquals(LINK_URI.toString(), links.get(0).getLink());
+            assertThat(links.get(0)).isEqualTo(response);
         }
     }
 

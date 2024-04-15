@@ -1,6 +1,8 @@
 package edu.java.scrapper.repository.jdbc;
 
+import edu.java.scrapper.exception.NotFoundException;
 import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.User;
 import edu.java.scrapper.repository.UserLinkRepository;
 import edu.java.scrapper.repository.query.UserLinkQuery;
 import java.sql.PreparedStatement;
@@ -19,6 +21,7 @@ public class JdbcUserLinkRepository implements UserLinkRepository {
     public static final String USER_ID_NAME = "user_id";
     private final UserLinkQuery userLinkQuery;
     private final JdbcTemplate jdbcTemplate;
+    private final JdbcUserRepository userRepository;
 
     @Override
     public Collection<Link> getAllLinksByUserId(long id) {
@@ -47,6 +50,30 @@ public class JdbcUserLinkRepository implements UserLinkRepository {
                 return statement;
             },
             (rs, rowNum) -> rs.getLong(USER_ID_NAME)
+        );
+    }
+
+    @Override
+    public void add(long userId, Link link) {
+        User user = userRepository.findById(userId);
+
+        if (user != null) {
+            jdbcTemplate.update(
+                userLinkQuery.getInsertIntoUserlink(),
+                userId,
+                link.getId()
+            );
+        } else {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void delete(long userId, Link link) {
+        jdbcTemplate.update(
+            userLinkQuery.getDeleteFromUserlink(),
+            userId,
+            link.getId()
         );
     }
 }

@@ -25,13 +25,17 @@ public class JooqUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional
+    public User findById(long id) {
+        List<User> users = dsl.selectFrom(USERS).where(USERS.TG_ID.eq(id)).fetchInto(User.class);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    @Override
     public Integer remove(long id) {
         return dsl.deleteFrom(USERS).where(USERS.TG_ID.eq(id)).execute();
     }
 
     @Override
-    @Transactional
     public Integer add(long id) {
         return dsl.insertInto(USERS).set(USERS.TG_ID, id)
             .set(USERS.CREATED_AT, LocalDateTime.now().atOffset(ZoneOffset.UTC)).execute();

@@ -1,20 +1,17 @@
 package edu.java.scrapper.repository.jpa;
 
-import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
-import edu.java.scrapper.model.User;
-import edu.java.scrapper.model.UserLink;
-import edu.java.scrapper.model.UserLinkId;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.jpa.dao.LinkDao;
 import edu.java.scrapper.repository.jpa.dao.UserLinkDao;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
 import java.net.URI;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,28 +26,22 @@ public class JpaLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
-    public LinkResponse add(long id, URI link) {
-        Link existingLink = linkDao.saveAndFlush(new Link().setLink(link.toString())
+    public Link add(long id, URI link) {
+        return linkDao.saveAndFlush(new Link().setLink(link.toString())
             .setLastCheck(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
-
-        userLinkDao.saveAndFlush(
-            new UserLink().setUserLinkId(
-                new UserLinkId().setUser(new User().setTgId(id)).setLink(existingLink)
-            )
-        );
-
-        return new LinkResponse(id, link);
     }
 
     @Override
-    @Transactional
-    public LinkResponse delete(long id, URI link) {
+    public void updateLastCheck(Link link) {
+        linkDao.updateLastCheck(link.getId(), Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
+    }
+
+    @Override
+    public void delete(long id, URI link) {
         userLinkDao.deleteByUserLinkIdUserTgIdAndUserLinkIdLinkLink(id, link.toString());
         linkDao.deleteByLink(link.toString());
         userLinkDao.flush();
         linkDao.flush();
-        return new LinkResponse(id, link);
     }
 
     @Override

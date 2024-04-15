@@ -21,7 +21,6 @@ public class JpaGitCommitRepository implements GitCommitRepository {
     }
 
     @Override
-    @Transactional
     public Integer addCommit(GitCommit commit) {
         gitCommitDao.saveAndFlush(commit);
         return 1;
