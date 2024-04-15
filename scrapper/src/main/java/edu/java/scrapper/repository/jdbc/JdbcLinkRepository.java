@@ -32,27 +32,40 @@ public class JdbcLinkRepository implements LinkRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
+    public Link exists(URI link) {
+        List<Link> links = jdbcTemplate.query(linksQuery.getSelectLinkByUrl(), (rs, rowNum) -> {
+                Link existingLink = new Link();
+                existingLink.setId(rs.getLong(ID_NAME));
+                existingLink.setLink(rs.getString(URL_NAME));
+                Timestamp timestamp = rs.getTimestamp(LAST_CHECK_NAME);
+                existingLink.setLastCheck(timestamp != null ? timestamp.toLocalDateTime() : null);
+                return existingLink;
+            },
+            link.toString());
+
+        if (links.isEmpty()) {
+            return null;
+        }
+
+        return links.get(0);
+    }
+
+    @Override
     @Transactional
     public LinkResponse add(long id, URI link) {
 
-        List<Long> linkIds = jdbcTemplate.queryForList(linksQuery.getSelectLinkIdByUrl(), Long.class, link.toString());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement = con.prepareStatement(linksQuery.getInsertLink(), new String[] {ID_NAME});
+            statement.setString(1, link.toString());
+            statement.setTimestamp(
+                2,
+                Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+            );
+            return statement;
+        }, keyHolder);
 
-        Long linkId;
-        if (linkIds.isEmpty()) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(con -> {
-                PreparedStatement statement = con.prepareStatement(linksQuery.getInsertLink(), new String[] {ID_NAME});
-                statement.setString(1, link.toString());
-                statement.setTimestamp(
-                    2,
-                    Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
-                );
-                return statement;
-            }, keyHolder);
-            linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        } else {
-            linkId = linkIds.get(0);
-        }
+        Long linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         jdbcTemplate.update(userLinkQuery.getInsertIntoUserlink(), id, linkId);
 

@@ -7,6 +7,8 @@ import java.util.Collection;
 
 public interface LinkRepository {
 
+    Link exists(URI link);
+
     LinkResponse add(long id, URI link);
 
     LinkResponse delete(long id, URI link);

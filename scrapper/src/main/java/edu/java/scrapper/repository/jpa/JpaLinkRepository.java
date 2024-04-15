@@ -24,14 +24,15 @@ public class JpaLinkRepository implements LinkRepository {
     private final UserLinkDao userLinkDao;
 
     @Override
+    public Link exists(URI link) {
+        return linkDao.findByLink(link.toString());
+    }
+
+    @Override
     @Transactional
     public LinkResponse add(long id, URI link) {
-        Link existingLink = linkDao.findByLink(link.toString());
-
-        if (existingLink == null) {
-            existingLink = linkDao.saveAndFlush(new Link().setLink(link.toString())
-                .setLastCheck(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
-        }
+        Link existingLink = linkDao.saveAndFlush(new Link().setLink(link.toString())
+            .setLastCheck(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
 
         userLinkDao.saveAndFlush(
             new UserLink().setUserLinkId(

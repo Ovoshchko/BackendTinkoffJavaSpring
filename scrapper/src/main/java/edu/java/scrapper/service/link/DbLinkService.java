@@ -5,6 +5,7 @@ import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.dto.response.ListLinksResponse;
 import edu.java.scrapper.exception.NotFoundException;
+import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
 import java.net.URI;
@@ -27,7 +28,13 @@ public class DbLinkService implements LinkService {
 
     public LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         try {
-            return linkRepository.add(tgChatId, addLinkRequest.link());
+            Link existing = linkRepository.exists(addLinkRequest.link());
+
+            if (existing == null) {
+                return linkRepository.add(tgChatId, addLinkRequest.link());
+            }
+
+            return new LinkResponse(tgChatId, addLinkRequest.link());
         } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException(USER_NOT_FOUND);
         }

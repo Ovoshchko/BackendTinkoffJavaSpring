@@ -48,6 +48,8 @@ public class DbLinkServiceTest {
 
         AddLinkRequest addLinkRequest = new AddLinkRequest(URL);
 
+        when(jdbcLinkRepository.exists(addLinkRequest.link())).thenReturn(LINK);
+
         when(jdbcLinkRepository.add(TG_CHAT_ID, addLinkRequest.link())).thenReturn(LINK_RESPONSE);
 
         LinkResponse body = linkService.addLink(TG_CHAT_ID, addLinkRequest);

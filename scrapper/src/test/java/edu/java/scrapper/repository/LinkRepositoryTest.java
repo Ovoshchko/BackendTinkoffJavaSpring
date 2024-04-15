@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import scala.concurrent.impl.FutureConvertersImpl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +27,7 @@ class LinkRepositoryTest extends IntegrationTest {
 
     public static final String USER_ID_NAME = "user_id";
     private static final long USER_ID = 12345L;
+    private static final Timestamp TIMESTAMP = Timestamp.valueOf("2018-11-12 01:02:25.068593");
     private static final URI LINK_URI = URI.create("https://example.com");
     private static final URI LINK_URI_2 = URI.create("https://notexample.com");
     private static final String ID_NAME = "id";
@@ -44,7 +46,7 @@ class LinkRepositoryTest extends IntegrationTest {
         jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement("INSERT INTO users VALUES (?, ?);");
             statement.setLong(1, USER_ID);
-            statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setTimestamp(2, TIMESTAMP);
             return statement;
         });
     }
@@ -54,6 +56,26 @@ class LinkRepositoryTest extends IntegrationTest {
         jdbcTemplate.update("DELETE FROM userlink;");
         jdbcTemplate.update("DELETE FROM links;");
         jdbcTemplate.update("DELETE FROM users;");
+    }
+
+    @Test
+    @Rollback
+    void exists() {
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement =
+                con.prepareStatement("INSERT INTO links (url, last_check) VALUES (?, ?);");
+            statement.setString(1, LINK_URI.toString());
+            statement.setTimestamp(2, TIMESTAMP);
+            return statement;
+        });
+
+        for (LinkRepository linkRepository: linkRepositories) {
+            Link link = linkRepository.exists(LINK_URI);
+
+            assertEquals(LINK_URI.toString(), link.getLink());
+            assertEquals(TIMESTAMP.toLocalDateTime(), link.getLastCheck());
+        }
     }
 
     @Test

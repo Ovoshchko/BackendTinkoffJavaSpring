@@ -7,6 +7,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
@@ -23,18 +24,20 @@ public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dsl;
 
     @Override
+    public Link exists(URI link) {
+        List<Link> links = dsl.select().from(LINKS).where(LINKS.URL.eq(link.toString())).fetchInto(Link.class);
+
+        return links.isEmpty() ? null : links.get(0);
+    }
+
+    @Override
     @Transactional
     public LinkResponse add(long id, URI link) {
-        long idResponse =
-            dsl.select(LINKS.ID).from(LINKS).where(LINKS.URL.eq(link.toString())).execute();
-
-        if (idResponse == 0) {
-            idResponse = Objects.requireNonNull(dsl.insertInto(LINKS).set(LINKS.URL, link.toString())
-                    .set(LINKS.LAST_CHECK, LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
-                    .returning(LINKS.ID)
-                    .fetchOne())
-                .getValue(LINKS.ID);
-        }
+        long idResponse = Objects.requireNonNull(dsl.insertInto(LINKS).set(LINKS.URL, link.toString())
+                .set(LINKS.LAST_CHECK, LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+                .returning(LINKS.ID)
+                .fetchOne())
+            .getValue(LINKS.ID);
 
         dsl.insertInto(USERLINK).set(USERLINK.USER_ID, id).set(USERLINK.LINK_ID, idResponse)
             .execute();
