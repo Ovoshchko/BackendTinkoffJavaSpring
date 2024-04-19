@@ -32,7 +32,7 @@ public class JpaLinkRepository implements LinkRepository {
 
     @Override
     public void updateLastCheck(Link link) {
-        linkDao.updateLastCheck(link.getId(), Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
+        linkDao.updateLastCheck(link.getId(), OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime());
     }
 
     @Override

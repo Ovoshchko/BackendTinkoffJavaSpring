@@ -21,5 +21,5 @@ public interface LinkDao extends JpaRepository<Link, Long> {
 
     @Modifying
     @Query("UPDATE Link l SET l.lastCheck = :newDate WHERE l.id = :id")
-    void updateLastCheck(@Param("id") long id, @Param("newDate") Timestamp newDate);
+    void updateLastCheck(@Param("id") long id, @Param("newDate") LocalDateTime newDate);
 }
