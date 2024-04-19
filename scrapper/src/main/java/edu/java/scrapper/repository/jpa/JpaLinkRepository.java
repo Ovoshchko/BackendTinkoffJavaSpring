@@ -5,7 +5,6 @@ import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.jpa.dao.LinkDao;
 import edu.java.scrapper.repository.jpa.dao.UserLinkDao;
 import java.net.URI;
-import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;

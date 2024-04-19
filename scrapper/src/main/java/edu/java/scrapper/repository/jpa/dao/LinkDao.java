@@ -1,7 +1,6 @@
 package edu.java.scrapper.repository.jpa.dao;
 
 import edu.java.scrapper.model.Link;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import org.springframework.data.jpa.repository.JpaRepository;
