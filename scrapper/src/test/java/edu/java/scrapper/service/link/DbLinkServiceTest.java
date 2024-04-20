@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +48,7 @@ public class DbLinkServiceTest {
 
         AddLinkRequest addLinkRequest = new AddLinkRequest(URL);
 
-        when(jdbcLinkRepository.exists(addLinkRequest.link())).thenReturn(LINK);
+        when(jdbcLinkRepository.add(TG_CHAT_ID, addLinkRequest.link())).thenReturn(LINK_RESPONSE);
 
         LinkResponse body = linkService.addLink(TG_CHAT_ID, addLinkRequest);
 
@@ -62,8 +61,7 @@ public class DbLinkServiceTest {
 
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URL);
 
-        when(jdbcLinkRepository.exists(URL)).thenReturn(LINK);
-        doNothing().when(jdbcUserLinkRepository).delete(TG_CHAT_ID, LINK);
+        when(jdbcLinkRepository.delete(TG_CHAT_ID, URL)).thenReturn(LINK_RESPONSE);
 
         LinkResponse responseEntity = linkService.deleteLink(TG_CHAT_ID, removeLinkRequest);
 

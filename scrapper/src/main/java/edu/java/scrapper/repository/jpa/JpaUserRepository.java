@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,11 +22,7 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
-    public User findById(long id) {
-        return userDao.findById(id).orElse(null);
-    }
-
-    @Override
+    @Transactional
     public Integer remove(long id) {
         userDao.deleteById(id);
         userDao.flush();
@@ -33,6 +30,7 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
+    @Transactional
     public Integer add(long id) {
         userDao.saveAndFlush(new User().setTgId(id).setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()));
         return 1;

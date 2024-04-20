@@ -34,20 +34,6 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
-    public User findById(long id) {
-        List<User> users = jdbcTemplate.query(
-            userQuery.getFindByIdUser(),
-            (ResultSet resultSet, int rowNum) ->
-                new User()
-                    .setTgId(resultSet.getLong(TG_ID_NAME))
-                    .setCreatedAt(resultSet.getTimestamp(CREATED_AT_NAME).toLocalDateTime()),
-            id
-        );
-
-        return users.isEmpty() ? null : users.get(0);
-    }
-
-    @Override
     @Transactional
     public Integer remove(long id) {
         return jdbcTemplate.update(userQuery.getDeleteUserById(), id);

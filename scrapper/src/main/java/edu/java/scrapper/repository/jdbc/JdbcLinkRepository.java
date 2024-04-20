@@ -1,5 +1,6 @@
 package edu.java.scrapper.repository.jdbc;
 
+import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.query.LinksQuery;
@@ -8,7 +9,6 @@ import java.net.URI;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @AllArgsConstructor
@@ -31,57 +32,36 @@ public class JdbcLinkRepository implements LinkRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Link exists(URI link) {
-        List<Link> links = jdbcTemplate.query(linksQuery.getSelectLinkByUrl(), (rs, rowNum) -> {
-                Link existingLink = new Link();
-                existingLink.setId(rs.getLong(ID_NAME));
-                existingLink.setLink(rs.getString(URL_NAME));
-                Timestamp timestamp = rs.getTimestamp(LAST_CHECK_NAME);
-                existingLink.setLastCheck(timestamp != null ? timestamp.toLocalDateTime() : null);
-                return existingLink;
-            },
-            link.toString()
-        );
+    @Transactional
+    public LinkResponse add(long id, URI link) {
 
-        if (links.isEmpty()) {
-            return null;
+        List<Long> linkIds = jdbcTemplate.queryForList(linksQuery.getSelectLinkIdByUrl(), Long.class, link.toString());
+
+        Long linkId;
+        if (linkIds.isEmpty()) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(con -> {
+                PreparedStatement statement = con.prepareStatement(linksQuery.getInsertLink(), new String[] {ID_NAME});
+                statement.setString(1, link.toString());
+                statement.setTimestamp(
+                    2,
+                    Timestamp.valueOf(LocalDateTime.now().atOffset(ZoneOffset.UTC).toLocalDateTime())
+                );
+                return statement;
+            }, keyHolder);
+            linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        } else {
+            linkId = linkIds.get(0);
         }
 
-        return links.get(0);
+        jdbcTemplate.update(userLinkQuery.getInsertIntoUserlink(), id, linkId);
+
+        return new LinkResponse(id, link);
     }
 
     @Override
-    public Link add(long id, URI link) {
-
-        Timestamp now = Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime());
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(linksQuery.getInsertLink(), new String[] {ID_NAME});
-            statement.setString(1, link.toString());
-            statement.setTimestamp(
-                2,
-                now
-            );
-            return statement;
-        }, keyHolder);
-
-        Long linkId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-
-        return new Link().setId(linkId).setLink(link.toString()).setLastCheck(now.toLocalDateTime());
-    }
-
-    @Override
-    public void updateLastCheck(Link link) {
-        jdbcTemplate.update(
-            linksQuery.getUpdateLastCheckTime(),
-            Timestamp.valueOf(OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()),
-            link.getId()
-        );
-    }
-
-    @Override
-    public void delete(long id, URI link) {
+    @Transactional
+    public LinkResponse delete(long id, URI link) {
 
         List<Long> linkIds = jdbcTemplate.queryForList(linksQuery.getSelectLinkIdByUrl(), Long.class, link.toString());
 
@@ -90,6 +70,8 @@ public class JdbcLinkRepository implements LinkRepository {
         }
 
         jdbcTemplate.update(linksQuery.getDeleteFromLinks(), linkIds.get(0));
+
+        return new LinkResponse(id, link);
     }
 
     @Override

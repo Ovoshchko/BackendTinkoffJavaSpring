@@ -6,9 +6,6 @@ on:
     paths:
       - .github/workflows/bot.yml
       - bot/**
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/bot
 
 jobs:
   build:
@@ -39,28 +36,6 @@ jobs:
           min-coverage-changed-files: 30
           title: Code Coverage
           update-comment: true
-
-      - name: Log in
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: ./bot
-          file: ./bot/bot.Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
 
   checkstyle:
     name: checkstyle

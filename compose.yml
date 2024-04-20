@@ -64,7 +64,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     extra_hosts:
-      host.docker.internal: 172.17.0.1
+      docker.host: 172.17.0.1
 
   grafana:
     image: grafana/grafana-oss

@@ -1,8 +1,6 @@
 package edu.java.scrapper.repository.jooq;
 
-import edu.java.scrapper.exception.NotFoundException;
 import edu.java.scrapper.model.Link;
-import edu.java.scrapper.model.User;
 import edu.java.scrapper.repository.UserLinkRepository;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import static edu.java.scrapper.domain.jooq.linkviewer.Tables.USERLINK;
 public class JooqUserLinkRepository implements UserLinkRepository {
 
     private final DSLContext dsl;
-    private final JooqUserRepository userRepository;
 
     @Override
     public Collection<Link> getAllLinksByUserId(long id) {
@@ -41,27 +38,5 @@ public class JooqUserLinkRepository implements UserLinkRepository {
             .from(USERLINK)
             .where(USERLINK.LINK_ID.eq(link.getId()))
             .fetchInto(Long.class);
-    }
-
-    @Override
-    public void add(long userId, Link link) {
-        User user = userRepository.findById(userId);
-
-        if (user != null) {
-            throw new NotFoundException(USER_NOT_FOUND);
-        }
-
-        dsl.insertInto(USERLINK)
-            .set(USERLINK.USER_ID, userId)
-            .set(USERLINK.LINK_ID, link.getId())
-            .execute();
-    }
-
-    @Override
-    public void delete(long userId, Link link) {
-        dsl.deleteFrom(USERLINK)
-            .where(USERLINK.USER_ID.eq(userId))
-            .and(USERLINK.LINK_ID.eq(link.getId()))
-            .execute();
     }
 }

@@ -79,17 +79,4 @@ class UserRepositoryTest extends IntegrationTest {
         }
 
     }
-
-    @Test
-    @Transactional
-    @Rollback
-    void findUserById() {
-        jdbcTemplate.update("INSERT INTO users VALUES (?, now()), (23, now());", USER_ID);
-
-        for (UserRepository userRepository: userRepositories) {
-            User user = userRepository.findById(USER_ID);
-
-            assertEquals(USER_ID, user.getTgId());
-        }
-    }
 }
