@@ -3,7 +3,7 @@ app:
     enable: true
     interval: 25s
     force-check-delay: 5s
-  database-access-type: jpa
+  database-access-type: jdbc
   use-queue: false
 
 api:

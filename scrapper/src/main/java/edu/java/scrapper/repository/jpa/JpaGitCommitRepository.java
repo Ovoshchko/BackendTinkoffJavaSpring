@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +20,6 @@ public class JpaGitCommitRepository implements GitCommitRepository {
     }
 
     @Override
-    @Transactional
     public Integer addCommit(GitCommit commit) {
         gitCommitDao.saveAndFlush(commit);
         return 1;

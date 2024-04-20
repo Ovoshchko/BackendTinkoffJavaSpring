@@ -5,6 +5,7 @@ import edu.java.scrapper.dto.request.RemoveLinkRequest;
 import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.dto.response.ListLinksResponse;
 import edu.java.scrapper.exception.NotFoundException;
+import edu.java.scrapper.model.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import edu.java.scrapper.repository.UserLinkRepository;
 import java.net.URI;
@@ -27,13 +28,31 @@ public class DbLinkService implements LinkService {
 
     public LinkResponse addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         try {
-            return linkRepository.add(tgChatId, addLinkRequest.link());
+            Link existing = linkRepository.exists(addLinkRequest.link());
+
+            if (existing == null) {
+                existing = linkRepository.add(tgChatId, addLinkRequest.link());
+            }
+
+            userLinkRepository.add(tgChatId, existing);
+
+            return new LinkResponse(existing.getId(), addLinkRequest.link());
         } catch (DataIntegrityViolationException exception) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
     }
 
     public LinkResponse deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
-        return linkRepository.delete(tgChatId, removeLinkRequest.link());
+
+        Link link = linkRepository.exists(removeLinkRequest.link());
+
+        userLinkRepository.delete(tgChatId, link);
+
+        return new LinkResponse(link.getId(), removeLinkRequest.link());
+    }
+
+    @Override
+    public void updateLinkLastCheck(Link link) {
+        linkRepository.updateLastCheck(link);
     }
 }

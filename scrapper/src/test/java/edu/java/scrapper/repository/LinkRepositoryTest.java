@@ -1,7 +1,6 @@
 package edu.java.scrapper.repository;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.dto.response.LinkResponse;
 import edu.java.scrapper.model.Link;
 import java.net.URI;
 import java.sql.PreparedStatement;
@@ -17,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +26,7 @@ class LinkRepositoryTest extends IntegrationTest {
 
     public static final String USER_ID_NAME = "user_id";
     private static final long USER_ID = 12345L;
+    private static final Timestamp TIMESTAMP = Timestamp.valueOf("2018-11-12 01:02:25.068593");
     private static final URI LINK_URI = URI.create("https://example.com");
     private static final URI LINK_URI_2 = URI.create("https://notexample.com");
     private static final String ID_NAME = "id";
@@ -44,7 +45,7 @@ class LinkRepositoryTest extends IntegrationTest {
         jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement("INSERT INTO users VALUES (?, ?);");
             statement.setLong(1, USER_ID);
-            statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setTimestamp(2, TIMESTAMP);
             return statement;
         });
     }
@@ -57,6 +58,26 @@ class LinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
+    @Rollback
+    void exists() {
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement =
+                con.prepareStatement("INSERT INTO links (url, last_check) VALUES (?, ?);");
+            statement.setString(1, LINK_URI.toString());
+            statement.setTimestamp(2, TIMESTAMP);
+            return statement;
+        });
+
+        for (LinkRepository linkRepository : linkRepositories) {
+            Link link = linkRepository.exists(LINK_URI);
+
+            assertEquals(LINK_URI.toString(), link.getLink());
+            assertEquals(TIMESTAMP.toLocalDateTime(), link.getLastCheck());
+        }
+    }
+
+    @Test
     @Transactional
     @Rollback
     void add() {
@@ -65,7 +86,10 @@ class LinkRepositoryTest extends IntegrationTest {
             jdbcTemplate.update("DELETE FROM userlink;");
             jdbcTemplate.update("DELETE FROM links;");
 
-            LinkResponse response = linkRepository.add(USER_ID, LINK_URI);
+            Link response = linkRepository.add(USER_ID, LINK_URI);
+            long roundedNanos = Math.round(response.getLastCheck().getNano() / 1000.0) * 1000;
+            response.setLastCheck(response.getLastCheck().withNano(0)
+                .plusNanos(roundedNanos));
 
             List<Link> links = jdbcTemplate.query(
                 "SELECT * FROM links;",
@@ -79,9 +103,7 @@ class LinkRepositoryTest extends IntegrationTest {
                 }
             );
 
-            assertEquals(LINK_URI.toString(), response.url().toString());
-            assertEquals(USER_ID, response.id());
-            assertEquals(LINK_URI.toString(), links.get(0).getLink());
+            assertThat(links.get(0)).isEqualTo(response);
         }
     }
 
