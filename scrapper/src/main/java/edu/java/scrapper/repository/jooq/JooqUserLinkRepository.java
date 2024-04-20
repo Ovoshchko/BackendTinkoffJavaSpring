@@ -47,7 +47,7 @@ public class JooqUserLinkRepository implements UserLinkRepository {
     public void add(long userId, Link link) {
         User user = userRepository.findById(userId);
 
-        if (user != null) {
+        if (user == null) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
 
