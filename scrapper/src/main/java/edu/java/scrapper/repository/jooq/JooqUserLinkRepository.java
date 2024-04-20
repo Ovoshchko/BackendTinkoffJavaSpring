@@ -48,13 +48,13 @@ public class JooqUserLinkRepository implements UserLinkRepository {
         User user = userRepository.findById(userId);
 
         if (user != null) {
-            dsl.insertInto(USERLINK)
-                .set(USERLINK.USER_ID, userId)
-                .set(USERLINK.LINK_ID, link.getId())
-                .execute();
-        } else {
             throw new NotFoundException(USER_NOT_FOUND);
         }
+
+        dsl.insertInto(USERLINK)
+            .set(USERLINK.USER_ID, userId)
+            .set(USERLINK.LINK_ID, link.getId())
+            .execute();
     }
 
     @Override

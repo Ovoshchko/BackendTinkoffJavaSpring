@@ -36,14 +36,14 @@ public class JpaUserLinkRepository implements UserLinkRepository {
         User user = userRepository.findById(userId);
 
         if (user != null) {
-            userLinkDao.saveAndFlush(
-                new UserLink().setUserLinkId(
-                    new UserLinkId().setUser(user).setLink(link)
-                )
-            );
-        } else {
             throw new NotFoundException(USER_NOT_FOUND);
         }
+
+        userLinkDao.saveAndFlush(
+            new UserLink().setUserLinkId(
+                new UserLinkId().setUser(user).setLink(link)
+            )
+        );
     }
 
     @Override

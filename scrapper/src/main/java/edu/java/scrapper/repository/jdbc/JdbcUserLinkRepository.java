@@ -57,15 +57,15 @@ public class JdbcUserLinkRepository implements UserLinkRepository {
     public void add(long userId, Link link) {
         User user = userRepository.findById(userId);
 
-        if (user != null) {
-            jdbcTemplate.update(
-                userLinkQuery.getInsertIntoUserlink(),
-                userId,
-                link.getId()
-            );
-        } else {
+        if (user == null) {
             throw new NotFoundException(USER_NOT_FOUND);
         }
+
+        jdbcTemplate.update(
+            userLinkQuery.getInsertIntoUserlink(),
+            userId,
+            link.getId()
+        );
     }
 
     @Override
